@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# S1450: Private fields only used as local variables in methods should become local variables
+dotnet_diagnostic.S1450.severity = silent
+
+# S112: General exceptions should never be thrown
+dotnet_diagnostic.S112.severity = silent
