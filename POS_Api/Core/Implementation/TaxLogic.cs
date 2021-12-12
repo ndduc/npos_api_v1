@@ -16,10 +16,14 @@ namespace POS_Api.Core.Implementation
     {
         private readonly IUserLogic _userLogic;
         private readonly ILocationLogic _locationLogic;
-        public TaxLogic(IUserLogic userLogic, ILocationLogic locationLogic)
+        private readonly IProductLogic _productLogic;
+        private readonly ILocationProductRelationLogic _productLocationRelationLogic;
+        public TaxLogic(IUserLogic userLogic, ILocationLogic locationLogic, IProductLogic productLogic, ILocationProductRelationLogic productLocationRelationLogic)
         {
             _userLogic = userLogic;
             _locationLogic = locationLogic;
+            _productLogic = productLogic;
+            _productLocationRelationLogic = productLocationRelationLogic;
         }
 
         public bool AddTax(TaxModel model, string userId, string locationId)
@@ -42,6 +46,81 @@ namespace POS_Api.Core.Implementation
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }
+        }
+
+        public bool AddTaxProductRelation(string productId, string locationId, string taxId, string userId)
+        {
+            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isTaxValid = VerifyUIdExist(taxId);
+            bool isProductValid = _productLogic.VerifyUIdExist(productId);
+            bool isTaxRelationExist = VerifyTaxProductRelation(productId, locationId);
+            bool isProductLocationExist = _productLocationRelationLogic.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
+            
+            if (!isUserValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
+            }
+
+            if (!isLocationValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+            }
+
+            if (!isProductValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Product"));
+            }
+
+            if (!isTaxValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Tax"));
+            }
+
+            if (isTaxRelationExist)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "This Tax Relation Already Existed"));
+            }
+
+            if (!isProductLocationExist)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Product Is Not Exist In This Location"));
+            }
+
+            return AddTaxProductRelationExecution(productId, locationId, taxId, userId);
+        }
+
+        private bool AddTaxProductRelationExecution(string productId, string locationId, string taxId, string userId)
+        {
+            int res = 0;
+            Conn = new DBConnection();
+            string query = " INSERT INTO ref_product_tax "
+                            + " (`product_uid`, `location_uid`, `tax_uid`, `added_by`) "
+                            + " VALUE( "
+                            + DbHelper.SetDBValue(productId, false)
+                            + DbHelper.SetDBValue(locationId, false)
+                            + DbHelper.SetDBValue(taxId, false)
+                            + DbHelper.SetDBValue(userId, true)
+                            + " ); ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    res = Cmd.ExecuteNonQuery();
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+
+            return CheckInsertionHelper(res);
         }
 
         public List<TaxModel> GetTaxByLocationId(string userId, string locationId)
@@ -190,6 +269,30 @@ namespace POS_Api.Core.Implementation
                 while (Reader.Read())
                 {
                     id = DbHelper.TryGet(Reader, "uid");
+                }
+                Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return CheckExistingHelper(id);
+        }
+
+        private bool VerifyTaxProductRelation(string productId, string locationId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_product_tax WHERE "
+                        + " `product_uid` = " + DbHelper.SetDBValue(productId, true)  + " AND "
+                        + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "id");
                 }
                 Conn.Close();
             }

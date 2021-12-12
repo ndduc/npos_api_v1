@@ -234,5 +234,30 @@ namespace POS_Api.Core.Implementation
             return CheckUpdateHelper(res);
 
         }
+    
+        public bool IsProductLocationExist(string locationId, string productId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_location_product WHERE "
+                            + " `product_uid` = " + DbHelper.SetDBValue(productId, true) + " AND "
+                            + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            Debug.WriteLine(query);
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "id");
+                }
+                Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return CheckExistingHelper(id);
+        }
     }
 }

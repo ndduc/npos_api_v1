@@ -12,5 +12,7 @@ namespace POS_Api.Core.Interface
         public bool VerifyUIdExist(string uid);
 
         public List<TaxModel> GetTaxByLocationId(string userId, string locationId);
+
+        public bool AddTaxProductRelation(string productId, string locationId, string taxId, string userId);
     }
 }

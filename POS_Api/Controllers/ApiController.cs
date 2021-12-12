@@ -45,9 +45,9 @@ namespace POS_Api.Controllers
             _LocationProductRelation = new LocationProductRelationLogic();
             _categoryLogic = new CategoryLogic(_UserLogic, _LocationLogic);
             _departmentLogic = new DepartmentLogic(_UserLogic, _LocationLogic);
-            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic);
+            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
             _sectionLogic = new SectionLogic(_UserLogic, _LocationLogic);
-            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic);
+            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
             _vendorLogic = new VendorLogic(_UserLogic, _LocationLogic);
         }
 
@@ -760,6 +760,33 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/relation-add")]
+        public dynamic AddDiscountProductRelation(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("discountId", out var discountId);
+                Request.Form.TryGetValue("productId", out var productId);
+                if (_discountLogic.AddDiscountProductRelation(productId, locid, discountId, userid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         #endregion
 
         #region SECTION
@@ -886,6 +913,34 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/relation-add")]
+        public dynamic AddTaxProductRelation(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("taxId", out var taxId);
+                Request.Form.TryGetValue("productId", out var productId);
+                if (_taxLogic.AddTaxProductRelation(productId, locid, taxId, userid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         #endregion
 
         #region VENDOR

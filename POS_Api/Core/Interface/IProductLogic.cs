@@ -13,5 +13,7 @@ namespace POS_Api.Core.Interface
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId);
 
         public ProductModel GetProductById(string userId, string locationId, Dictionary<string, string> param);
+
+        public bool VerifyUIdExist(string uid);
     }
 }

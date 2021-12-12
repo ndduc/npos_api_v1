@@ -278,7 +278,7 @@ namespace POS_Api.Core.Implementation
         {
             this.Conn = new DBConnection();
             string id = null;
-            string query = "SELECT uid FROM asset_location WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
+            string query = "SELECT uid FROM asset_product WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
             if (Conn.IsConnect())
             {
                 Cmd = new MySqlCommand(query, this.Conn.Connection);
@@ -295,6 +295,29 @@ namespace POS_Api.Core.Implementation
             }
 
             return VerifyNotExist(id);
+        }
+
+        public bool VerifyUIdExist(string uid)
+        {
+            this.Conn = new DBConnection();
+            string id = null;
+            string query = "SELECT uid FROM asset_product WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "uid");
+                }
+                this.Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+
+            return CheckExistingHelper(id);
         }
 
         private bool AddProductExecution(ProductModel model)
