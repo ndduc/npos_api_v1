@@ -21,11 +21,11 @@ namespace POS_Api.Core.Implementation
     public class ProductLogic : BaseHelper, IProductLogic
     {
 
-        private readonly IUserLogic _userLogic;
+        private readonly IUserRepos _userRepos;
         private readonly IProductRepos _productRepos;
-        public ProductLogic(IUserLogic userLogic)
+        public ProductLogic()
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
             _productRepos = new ProductRepos();
         }
 
@@ -42,7 +42,7 @@ namespace POS_Api.Core.Implementation
                 isUnqiue = _productRepos.VerifyUIdUnique(id);
             }
 
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if(isUserValid)
             {
@@ -71,7 +71,7 @@ namespace POS_Api.Core.Implementation
             bool isUserValid = false;
             bool isSucess = false;
             bool isRelationSucess = false;
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if (isUserValid)
             {
@@ -102,7 +102,7 @@ namespace POS_Api.Core.Implementation
 
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId))
+            if (_userRepos.VerifyUser(userId))
             {
                 return _productRepos.GetProductByLocationExecution(locationId);
             }
@@ -137,7 +137,7 @@ namespace POS_Api.Core.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Argument"));
             }
 
-            if (_userLogic.VerifyUser(userId))
+            if (_userRepos.VerifyUser(userId))
             {
                 ProductModel model = _productRepos.GetProductByIdExecution(locationId, whereClause);
                 

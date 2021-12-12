@@ -16,28 +16,30 @@ namespace POS_Api.Core.Implementation
 {
     public class DiscountLogic : BaseHelper, IDiscountLogic
     {
-        private readonly IUserLogic _userLogic;
-        private readonly ILocationLogic _locationLogic;
+        private readonly IUserRepos _userRepos;
+  
         private readonly ILocationProductRelationLogic _productLocationRelationLogic;
 
         private readonly IProductRepos _productRepos;
 
         private readonly IDiscountRepos _discountRepos;
 
-        public DiscountLogic(IUserLogic userLogic, ILocationLogic locationLogic, ILocationProductRelationLogic productLocationRelationLogic)
+        private readonly ILocationRepos _locationRepos;
+
+        public DiscountLogic(ILocationProductRelationLogic productLocationRelationLogic)
         {
-            _userLogic = userLogic;
-            _locationLogic = locationLogic;
+            _userRepos = new UserRepos();
             _productLocationRelationLogic = productLocationRelationLogic;
             _productRepos = new ProductRepos();
             _discountRepos = new DiscountRepos();
+            _locationRepos = new LocationRepos();
         }
 
         // Update Discount Rate and Desc
         public bool UpdateDiscount(DiscountModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
             {
@@ -64,7 +66,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _discountRepos.VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -79,7 +81,7 @@ namespace POS_Api.Core.Implementation
 
         public List<DiscountModel> GetDiscountByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _discountRepos.GetDiscountByLocationIdExecution(locationId);
             }
@@ -92,8 +94,8 @@ namespace POS_Api.Core.Implementation
 
         public bool AddDiscountProductRelation(string productId, string locationId, string discountId, string userId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
             bool isTaxValid = _discountRepos.VerifyUIdExist(discountId);
             bool isProductValid = _productRepos.VerifyUIdExist(productId);
             bool isTaxRelationExist = _discountRepos.VerifyDiscountProductRelation(productId, locationId);
