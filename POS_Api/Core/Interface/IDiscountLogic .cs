@@ -9,7 +9,6 @@ namespace POS_Api.Core.Interface
     public interface IDiscountLogic
     {
         public bool AddDiscount(DiscountModel model, string userId, string locationId);
-        public bool VerifyUIdExist(string uid);
 
         public List<DiscountModel> GetDiscountByLocationId(string userId, string locationId);
 

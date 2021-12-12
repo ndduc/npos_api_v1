@@ -2,6 +2,8 @@
 using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
+using POS_Api.Repository.Implementation;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -16,14 +18,16 @@ namespace POS_Api.Core.Implementation
     {
         private readonly IUserLogic _userLogic;
         private readonly ILocationLogic _locationLogic;
-        private readonly IProductLogic _productLogic;
         private readonly ILocationProductRelationLogic _productLocationRelationLogic;
-        public TaxLogic(IUserLogic userLogic, ILocationLogic locationLogic, IProductLogic productLogic, ILocationProductRelationLogic productLocationRelationLogic)
+
+        private readonly IProductRepos _productRepos;
+
+        public TaxLogic(IUserLogic userLogic, ILocationLogic locationLogic, ILocationProductRelationLogic productLocationRelationLogic)
         {
             _userLogic = userLogic;
             _locationLogic = locationLogic;
-            _productLogic = productLogic;
             _productLocationRelationLogic = productLocationRelationLogic;
+            _productRepos = new ProductRepos();
         }
 
         // Update Tax Rate and Desc
@@ -106,7 +110,7 @@ namespace POS_Api.Core.Implementation
             bool isUserValid = _userLogic.VerifyUser(userId);
             bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
             bool isTaxValid = VerifyUIdExist(taxId);
-            bool isProductValid = _productLogic.VerifyUIdExist(productId);
+            bool isProductValid = _productRepos.VerifyUIdExist(productId);
             bool isTaxRelationExist = VerifyTaxProductRelation(productId, locationId);
             bool isProductLocationExist = _productLocationRelationLogic.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
             

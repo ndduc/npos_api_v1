@@ -15,6 +15,6 @@ namespace POS_Api.Core.Interface
 
         public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param);
 
-        public bool VerifyUIdExist(string uid);
+        // public bool VerifyUIdExist(string uid);
     }
 }

@@ -45,9 +45,9 @@ namespace POS_Api.Controllers
             _LocationProductRelation = new LocationProductRelationLogic();
             _categoryLogic = new CategoryLogic(_UserLogic, _LocationLogic);
             _departmentLogic = new DepartmentLogic(_UserLogic, _LocationLogic);
-            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
+            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic, _LocationProductRelation);
             _sectionLogic = new SectionLogic(_UserLogic, _LocationLogic);
-            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
+            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic, _LocationProductRelation);
             _vendorLogic = new VendorLogic(_UserLogic, _LocationLogic);
         }
 
@@ -409,7 +409,16 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("code", out var ItemCode);
                 Request.Form.TryGetValue("cost", out var Cost);
                 Request.Form.TryGetValue("price", out var Price);
- 
+
+                //Assuming This will be a string of multiple item uid seperated by a comma -> LIST
+                Request.Form.TryGetValue("department", out var Department);
+                Request.Form.TryGetValue("category", out var Category);
+                Request.Form.TryGetValue("section", out var Section);
+                Request.Form.TryGetValue("vendor", out var Vendor);
+                Request.Form.TryGetValue("itemcode_list", out var ItemCodeList);
+                Request.Form.TryGetValue("upc_lis", out var UpcList);
+                Request.Form.TryGetValue("discount", out var Discount);
+                Request.Form.TryGetValue("tax", out var Tax);
 
                 if (userid == null || userid.Length < 36 || locid == null || locid.Length < 36)
                 {
@@ -498,7 +507,6 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
-
 
         [HttpPost, Route("pos/{userid?}/{locid?}/{productId?}/product/itemcode")]
         public dynamic AddProductItemCode(string userid, string locid, string productId) {
