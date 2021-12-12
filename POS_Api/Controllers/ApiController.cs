@@ -489,12 +489,6 @@ namespace POS_Api.Controllers
                 else
                 {
                     body = JsonSerializer.Serialize(_ProductLogic.GetProductByLocation(userid, locid));
-
-                    // To Do Add View Model
-                    // Pull Category By Product Id if not exist return emptry lst
-                    // Pull Department By PId ...
-                    // Pull Section By PId ...
-                    // Pull Vendor By PId ...
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
                 }
             }
@@ -537,6 +531,13 @@ namespace POS_Api.Controllers
             dynamic body;
             try
             {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
                 Request.Form.TryGetValue("uid", out var Uid);
                 Request.Form.TryGetValue("itemCode", out var Code);
                 Request.Form.TryGetValue("upc", out var Upc);
