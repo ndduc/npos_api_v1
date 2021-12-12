@@ -14,5 +14,7 @@ namespace POS_Api.Core.Interface
         public List<DiscountModel> GetDiscountByLocationId(string userId, string locationId);
 
         public bool AddDiscountProductRelation(string productId, string locationId, string discountId, string userId);
+
+        public bool UpdateDiscount(DiscountModel model, string userId, string locationId);
     }
 }

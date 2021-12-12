@@ -13,5 +13,7 @@ namespace POS_Api.Core.Interface
         public bool VerifyUIdExist(string uid);
 
         public List<CategoryModel> GetCategoryByLocationId(string userId, string locationId);
+
+        public bool UpdateCategory(CategoryModel model, string userId, string locationId);
     }
 }
