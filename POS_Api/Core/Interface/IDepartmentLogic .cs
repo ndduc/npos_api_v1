@@ -13,5 +13,7 @@ namespace POS_Api.Core.Interface
         public bool VerifyUIdExist(string uid);
 
         public List<DepartmentModel> GetDepartmentByLocationId(string userId, string locationId);
+
+        public bool UpdateDepartment(DepartmentModel model, string userId, string locationId);
     }
 }

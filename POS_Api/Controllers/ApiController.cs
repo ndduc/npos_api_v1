@@ -45,9 +45,9 @@ namespace POS_Api.Controllers
             _LocationProductRelation = new LocationProductRelationLogic();
             _categoryLogic = new CategoryLogic(_UserLogic, _LocationLogic);
             _departmentLogic = new DepartmentLogic(_UserLogic, _LocationLogic);
-            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic);
+            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
             _sectionLogic = new SectionLogic(_UserLogic, _LocationLogic);
-            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic);
+            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
             _vendorLogic = new VendorLogic(_UserLogic, _LocationLogic);
         }
 
@@ -489,12 +489,6 @@ namespace POS_Api.Controllers
                 else
                 {
                     body = JsonSerializer.Serialize(_ProductLogic.GetProductByLocation(userid, locid));
-
-                    // To Do Add View Model
-                    // Pull Category By Product Id if not exist return emptry lst
-                    // Pull Department By PId ...
-                    // Pull Section By PId ...
-                    // Pull Vendor By PId ...
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
                 }
             }
@@ -537,6 +531,13 @@ namespace POS_Api.Controllers
             dynamic body;
             try
             {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
                 Request.Form.TryGetValue("uid", out var Uid);
                 Request.Form.TryGetValue("itemCode", out var Code);
                 Request.Form.TryGetValue("upc", out var Upc);
@@ -577,6 +578,36 @@ namespace POS_Api.Controllers
                 else
                 {
                     body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/category/update")]
+        public dynamic UpdateCategory(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                CategoryModel model = new CategoryModel()
+                {
+                    Description = Desc
+                };
+                if (_categoryLogic.UpdateCategory(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE CATEGORY";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
 
@@ -654,6 +685,36 @@ namespace POS_Api.Controllers
                 else
                 {
                     body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/department/update")]
+        public dynamic UpdateDepartment(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                DepartmentModel model = new DepartmentModel()
+                {
+                    Description = Desc
+                };
+                if (_departmentLogic.UpdateDepartment(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE DEPARTMENT";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
 
@@ -743,6 +804,38 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/update")]
+        public dynamic UpdateDiscount(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("rate", out var Rate);
+                DiscountModel model = new DiscountModel()
+                {
+                    Description = Desc,
+                    Rate = double.Parse(Rate)
+                };
+                if (_discountLogic.UpdateDiscount(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE DISCOUNT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpGet, Route("pos/{userid?}/{locid?}/discount/get")]
         public dynamic GetDiscountByLocationId(string userid, string locid)
         {
@@ -751,6 +844,33 @@ namespace POS_Api.Controllers
             {
                 var res = _discountLogic.GetDiscountByLocationId(userid, locid);
                 return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/relation-add")]
+        public dynamic AddDiscountProductRelation(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("discountId", out var discountId);
+                Request.Form.TryGetValue("productId", out var productId);
+                if (_discountLogic.AddDiscountProductRelation(productId, locid, discountId, userid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
             }
             catch (Exception e)
             {
@@ -781,6 +901,36 @@ namespace POS_Api.Controllers
                 else
                 {
                     body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/section/add")]
+        public dynamic UpdateSection(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                SectionModel model = new SectionModel()
+                {
+                    Description = Desc
+                };
+                if (_sectionLogic.UpdateSection(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE SECTION";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
 
@@ -870,6 +1020,38 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/update")]
+        public dynamic UpdateTax(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("rate", out var Rate);
+                TaxModel model = new TaxModel()
+                {
+                    Description = Desc,
+                    Rate = double.Parse(Rate)
+                };
+                if (_taxLogic.UpdateTax(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE TAX";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpGet, Route("pos/{userid?}/{locid?}/tax/get")]
         public dynamic GetTaxByLocationId(string userid, string locid)
         {
@@ -885,6 +1067,34 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/relation-add")]
+        public dynamic AddTaxProductRelation(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("taxId", out var taxId);
+                Request.Form.TryGetValue("productId", out var productId);
+                if (_taxLogic.AddTaxProductRelation(productId, locid, taxId, userid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         #endregion
 
         #region VENDOR
@@ -917,6 +1127,37 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/vendor/add")]
+        public dynamic UpdateVendor(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                VendorModel model = new VendorModel()
+                {
+                    Description = Desc
+                };
+                if (_vendorLogic.UpdateVendor(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE VENDOR";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/relation-add")]
         public dynamic AddVendorProductRelation(string userid, string locid)

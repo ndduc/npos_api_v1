@@ -1,4 +1,5 @@
 ﻿using POS_Api.Model;
+using POS_Api.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace POS_Api.Core.Interface
         public bool UpdateProduct(ProductModel model, string userId, string locationId);
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId);
 
-        public ProductModel GetProductById(string userId, string locationId, Dictionary<string, string> param);
+        public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param);
+
+        public bool VerifyUIdExist(string uid);
     }
 }

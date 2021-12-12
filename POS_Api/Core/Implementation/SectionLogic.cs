@@ -22,6 +22,57 @@ namespace POS_Api.Core.Implementation
             _locationLogic = locationLogic;
         }
 
+        public bool UpdateSection(SectionModel model, string userId, string locationId)
+        {
+            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+
+            if (!isUserValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
+            }
+
+            if (!isLocationValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+            }
+
+            model.UpdatedBy = userId;
+            return UpdateSectionExecution(model);
+        }
+
+        private bool UpdateSectionExecution(SectionModel model)
+        {
+            int res = 0;
+            Conn = new DBConnection();
+            string query = " UPDATE asset_section "
+                        + " SET "
+                        + " `description` = " + DbHelper.SetDBValue(model.Description, false)
+                        + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
+                        + " WHERE "
+                        + " uid = " + DbHelper.SetDBValue(model.UId, true) + " AND "
+                        + " location_uid = " + DbHelper.SetDBValue(model.LocationUId, true) + "";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    res = Cmd.ExecuteNonQuery();
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+
+            return CheckUpdateHelper(res);
+        }
+
         public List<SectionModel> GetSectionByLocationId(string userId, string locationId)
         {
             if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))

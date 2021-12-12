@@ -13,5 +13,7 @@ namespace POS_Api.Core.Interface
         public bool VerifyUIdExist(string uid);
 
         public List<VendorModel> GetVendorByLocationId(string userId, string locationId);
+
+        public bool UpdateVendor(VendorModel model, string userId, string locationId);
     }
 }
