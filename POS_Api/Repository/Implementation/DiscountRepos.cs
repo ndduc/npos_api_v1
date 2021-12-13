@@ -2,6 +2,7 @@
 using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -10,43 +11,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace POS_Api.Core.Implementation
+namespace POS_Api.Repository.Implementation
 {
-    public class DiscountLogic : BaseHelper, IDiscountLogic
+    public class DiscountRepos : BaseHelper, IDiscountRepos
     {
-        private readonly IUserLogic _userLogic;
-        private readonly ILocationLogic _locationLogic;
-        private readonly IProductLogic _productLogic;
-        private readonly ILocationProductRelationLogic _productLocationRelationLogic;
-        public DiscountLogic(IUserLogic userLogic, ILocationLogic locationLogic, IProductLogic productLogic, ILocationProductRelationLogic productLocationRelationLogic)
-        {
-            _userLogic = userLogic;
-            _locationLogic = locationLogic;
-            _productLogic = productLogic;
-            _productLocationRelationLogic = productLocationRelationLogic;
-        }
-
-        // Update Discount Rate and Desc
-        public bool UpdateDiscount(DiscountModel model, string userId, string locationId)
-        {
-            bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
-
-            if (!isUserValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
-            }
-
-            if (!isLocationValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
-            }
-
-            model.UpdatedBy = userId;
-            return UpdateDiscountExecution(model);
-        }
-
-        private bool UpdateDiscountExecution(DiscountModel model)
+        public bool UpdateDiscountExecution(DiscountModel model)
         {
             int res = 0;
             Conn = new DBConnection();
@@ -79,41 +48,7 @@ namespace POS_Api.Core.Implementation
             return CheckUpdateHelper(res);
         }
 
-        public bool AddDiscount(DiscountModel model, string userId, string locationId)
-        {
-            string id = null;
-            bool isUnqiue = false;
-            while (!isUnqiue)
-            {
-                id = Guid.NewGuid().ToString();
-                isUnqiue = VerifyUIdUnique(id);
-            }
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
-            {
-                model.UId = id;
-                model.AddedBy = userId;
-                model.LocationUId = locationId;
-                return AddDiscountExecution(model);
-            }
-            else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
-            }
-        }
-
-        public List<DiscountModel> GetDiscountByLocationId(string userId, string locationId)
-        {
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
-            {
-                return GetDiscountByLocationIdExecution(locationId);
-            }
-            else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
-            }
-        }
-
-        private List<DiscountModel> GetDiscountByLocationIdExecution(string locationId)
+        public List<DiscountModel> GetDiscountByLocationIdExecution(string locationId)
         {
             List<DiscountModel> lst = new List<DiscountModel>();
             Conn = new DBConnection();
@@ -170,7 +105,7 @@ namespace POS_Api.Core.Implementation
         }
 
 
-        private bool AddDiscountExecution(DiscountModel model)
+        public bool AddDiscountExecution(DiscountModel model)
         {
             int res = 0;
             Conn = new DBConnection();
@@ -204,7 +139,7 @@ namespace POS_Api.Core.Implementation
             return CheckInsertionHelper(res);
         }
 
-        private bool VerifyUIdUnique(string uid)
+        public bool VerifyUIdUnique(string uid)
         {
             this.Conn = new DBConnection();
             string id = null;
@@ -257,7 +192,7 @@ namespace POS_Api.Core.Implementation
             return CheckExistingHelper(id);
         }
 
-        private bool VerifyDiscountProductRelation(string productId, string locationId)
+        public bool VerifyDiscountProductRelation(string productId, string locationId)
         {
             Conn = new DBConnection();
             string id = null;
@@ -281,49 +216,7 @@ namespace POS_Api.Core.Implementation
             return CheckExistingHelper(id);
         }
 
-        public bool AddDiscountProductRelation(string productId, string locationId, string discountId, string userId)
-        {
-            bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
-            bool isTaxValid = VerifyUIdExist(discountId);
-            bool isProductValid = _productLogic.VerifyUIdExist(productId);
-            bool isTaxRelationExist = VerifyDiscountProductRelation(productId, locationId);
-            bool isProductLocationExist = _productLocationRelationLogic.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
-
-            if (!isUserValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
-            }
-
-            if (!isLocationValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
-            }
-
-            if (!isProductValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Product"));
-            }
-
-            if (!isTaxValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Discount"));
-            }
-
-            if (isTaxRelationExist)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "This Discount Relation Already Existed"));
-            }
-
-            if (!isProductLocationExist)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Product Is Not Exist In This Location"));
-            }
-
-            return AddDiscountProductRelationExecution(productId, locationId, discountId, userId);
-        }
-
-        private bool AddDiscountProductRelationExecution(string productId, string locationId, string discountId, string userId)
+        public bool AddDiscountProductRelationExecution(string productId, string locationId, string discountId, string userId)
         {
             int res = 0;
             Conn = new DBConnection();
@@ -355,6 +248,8 @@ namespace POS_Api.Core.Implementation
 
             return CheckInsertionHelper(res);
         }
+
+
 
     }
 }

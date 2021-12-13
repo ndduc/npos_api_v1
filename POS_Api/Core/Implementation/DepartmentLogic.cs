@@ -2,6 +2,8 @@
 using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
+using POS_Api.Repository.Implementation;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -14,18 +16,21 @@ namespace POS_Api.Core.Implementation
 {
     public class DepartmentLogic : BaseHelper, IDepartmentLogic
     {
-        private readonly IUserLogic _userLogic;
-        private readonly ILocationLogic _locationLogic;
-        public DepartmentLogic(IUserLogic userLogic, ILocationLogic locationLogic)
+        private readonly ILocationRepos _locationRepos;
+        private readonly IDepartmentRepos _departmentRepos;
+
+        private readonly IUserRepos _userRepos;
+        public DepartmentLogic()
         {
-            _userLogic = userLogic;
-            _locationLogic = locationLogic;
+            _departmentRepos = new DepartmentRepos();
+            _locationRepos = new LocationRepos();
+            _userRepos = new UserRepos();
         }
 
         public bool UpdateDepartment(DepartmentModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
             {
@@ -38,105 +43,19 @@ namespace POS_Api.Core.Implementation
             }
 
             model.UpdatedBy = userId;
-            return UpdateDepartmentExecution(model);
+            return _departmentRepos.UpdateDepartmentExecution(model);
         }
 
-        private bool UpdateDepartmentExecution(DepartmentModel model)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-            string query = " UPDATE asset_department "
-                        + " SET "
-                        + " `description` = " + DbHelper.SetDBValue(model.Description, false)
-                        + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
-                        + " WHERE "
-                        + " uid = " + DbHelper.SetDBValue(model.UId, true) + " AND "
-                        + " location_uid = " + DbHelper.SetDBValue(model.LocationUId, true) + "";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                    Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            return CheckUpdateHelper(res);
-        }
 
         public List<DepartmentModel> GetDepartmentByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
-                return GetDepartmentByLocationIdExecution(locationId);
+                return _departmentRepos.GetDepartmentByLocationIdExecution(locationId);
             }
             else
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
-            }
-        }
-
-        private List<DepartmentModel> GetDepartmentByLocationIdExecution(string locationId)
-        {
-            List<DepartmentModel> lst = new List<DepartmentModel>();
-            Conn = new DBConnection();
-            string query = " SELECT * FROM asset_department "
-                                + " WHERE `location_uid` = "
-                                + DbHelper.SetDBValue(locationId, true)
-                                + " ORDER BY `description` ASC; ";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    Reader = Cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        DepartmentModel model = new DepartmentModel()
-                        {
-                            UId = DbHelper.TryGet(Reader, "uid"),
-                            Description = DbHelper.TryGet(Reader, "description"),
-                            LocationUId = DbHelper.TryGet(Reader, "location_uid"),
-                            AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
-                            UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
-                            AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                            UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
-                        };
-
-                        lst.Add(model);
-                    }
-                    this.Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            if (lst.Count > 0)
-            {
-                return lst;
-            }
-            else
-            {
-                DepartmentModel model = new DepartmentModel();
-                model.IsError = true;
-                model.Error = "No Department Found";
-                lst.Add(model);
-                return lst;
             }
         }
 
@@ -148,14 +67,14 @@ namespace POS_Api.Core.Implementation
             while (!isUnqiue)
             {
                 id = Guid.NewGuid().ToString();
-                isUnqiue = VerifyUIdUnique(id);
+                isUnqiue = _departmentRepos.VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
                 model.LocationUId = locationId;
-                return AddDepartmentExecution(model);
+                return _departmentRepos.AddDepartmentExecution(model);
             }
             else
             {
@@ -163,48 +82,16 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        private bool AddDepartmentExecution(DepartmentModel model)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-            string query = "INSERT INTO asset_department "
-                            + " (`uid`,`description`, `location_uid`, `added_by`) "
-                            + " VALUES ("
-                            + DbHelper.SetDBValue(model.UId, false)
-                            + DbHelper.SetDBValue(model.Description, false)
-                            + DbHelper.SetDBValue(model.LocationUId, false)
-                            + DbHelper.SetDBValue(model.AddedBy, true)
-                            + " ); ";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                    Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            return CheckInsertionHelper(res);
-        }
 
         public bool AddDepartmentProductRelation(string uid, string productId, string locationId, string userId)
         {
-            if (_userLogic.VerifyUser(userId)
-                && _locationLogic.VerifyUIdExist(locationId)
-                && VerifyUIdExist(uid)
-                && !VerifyDepartmentProductRelationExist(uid, productId, locationId))
+            if (_userRepos.VerifyUser(userId)
+                && _locationRepos.VerifyUIdExist(locationId)
+                && _departmentRepos.VerifyUIdExist(uid)
+                && !_departmentRepos.VerifyDepartmentProductRelationExist(uid, productId, locationId))
             {
 
-                return AddDepartmentProductRelationExecution(uid, productId, locationId, userId);
+                return _departmentRepos.AddDepartmentProductRelationExecution(uid, productId, locationId, userId);
             }
             else
             {
@@ -212,124 +99,6 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        private bool AddDepartmentProductRelationExecution(string uid, string productId, string locationId, string userId)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-            string query = " INSERT INTO ref_location_product_department "
-                            + " (`product_uid`, `location_uid`, `department_uid`, `added_by`) "
-                            + " VALUE ( "
-                            + DbHelper.SetDBValue(productId, false)
-                            + DbHelper.SetDBValue(locationId, false)
-                            + DbHelper.SetDBValue(uid, false)
-                            + DbHelper.SetDBValue(userId, true)
-                            + " ); ";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                    Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
 
-            return CheckInsertionHelper(res);
-        }
-
-        private bool VerifyDepartmentProductRelationExist(string uid, string productId, string locationId)
-        {
-            this.Conn = new DBConnection();
-            string id = null;
-            string query = " SELECT id FROM ref_location_product_department "
-                            + " WHERE "
-                            + " product_uid = " + DbHelper.SetDBValue(productId, true) + " AND "
-                            + " location_uid = " + DbHelper.SetDBValue(locationId, true) + " AND "
-                            + " department_uid = " + DbHelper.SetDBValue(uid, true) + " ; ";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    Reader = Cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        id = DbHelper.TryGet(Reader, "id");
-                    }
-                    this.Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-            return CheckExistingHelper(id);
-        }
-
-        private bool VerifyUIdUnique(string uid)
-        {
-            this.Conn = new DBConnection();
-            string id = null;
-            string query = "SELECT uid FROM asset_department WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
-
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    Reader = Cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        id = DbHelper.TryGet(Reader, "uid");
-                    }
-                    this.Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-
-            }
-            catch (Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-            return VerifyNotExist(id);
-        }
-
-        public bool VerifyUIdExist(string uid)
-        {
-            Conn = new DBConnection();
-            string id = null;
-            string query = "SELECT uid FROM asset_department WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
-            if (Conn.IsConnect())
-            {
-                Cmd = new MySqlCommand(query, this.Conn.Connection);
-                Reader = Cmd.ExecuteReader();
-                while (Reader.Read())
-                {
-                    id = DbHelper.TryGet(Reader, "uid");
-                }
-                Conn.Close();
-            }
-            else
-            {
-                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-            }
-            return CheckExistingHelper(id);
-        }
     }
 }
