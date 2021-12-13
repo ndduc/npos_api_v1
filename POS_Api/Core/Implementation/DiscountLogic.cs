@@ -22,6 +22,7 @@ namespace POS_Api.Core.Implementation
 
         private readonly IDiscountRepos _discountRepos;
         private readonly ILocationRepos _locationRepos;
+        private readonly IProductRepos _productRepos;
         public DiscountLogic(IUserLogic userLogic, IProductLogic productLogic, ILocationProductRelationLogic productLocationRelationLogic)
         {
             _userLogic = userLogic;
@@ -29,6 +30,7 @@ namespace POS_Api.Core.Implementation
             _productLocationRelationLogic = productLocationRelationLogic;
             _discountRepos = new DiscountRepos();
             _locationRepos = new LocationRepos();
+            _productRepos = new ProductRepos(_userLogic);
         }
 
         // Update Discount Rate and Desc
@@ -92,7 +94,7 @@ namespace POS_Api.Core.Implementation
             bool isUserValid = _userLogic.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
             bool isTaxValid = _discountRepos.VerifyUIdExist(discountId);
-            bool isProductValid = _productLogic.VerifyUIdExist(productId);
+            bool isProductValid = _productRepos.VerifyUIdExist(productId);
             bool isTaxRelationExist = _discountRepos.VerifyDiscountProductRelation(productId, locationId);
             bool isProductLocationExist = _productLocationRelationLogic.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
 
