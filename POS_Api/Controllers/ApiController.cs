@@ -24,7 +24,6 @@ namespace POS_Api.Controllers
         private readonly ILocationLogic _LocationLogic;
         private readonly ILocationUserRelationLogic _LocationUserReLogic;
         private readonly IProductLogic _ProductLogic;
-        private readonly ILocationProductRelationLogic _LocationProductRelation;
         private readonly ICategoryLogic _categoryLogic;
         private readonly IDepartmentLogic _departmentLogic;
         private readonly IDiscountLogic _discountLogic;
@@ -42,12 +41,11 @@ namespace POS_Api.Controllers
             _ProductLogic = new ProductLogic();
             _LocationUserReLogic = new LocationUserRelationLogic();
             _UserLogicParent = new UserLogic(_LocationUserReLogic);
-            _LocationProductRelation = new LocationProductRelationLogic();
             _categoryLogic = new CategoryLogic();
             _departmentLogic = new DepartmentLogic();
-            _discountLogic = new DiscountLogic(_LocationProductRelation);
+            _discountLogic = new DiscountLogic();
             _sectionLogic = new SectionLogic();
-            _taxLogic = new TaxLogic(_LocationProductRelation);
+            _taxLogic = new TaxLogic();
             _vendorLogic = new VendorLogic();
         }
 
@@ -507,7 +505,7 @@ namespace POS_Api.Controllers
             Request.Form.TryGetValue("itemcode", out var ItemCode);
             try
             {
-                isSucess = _LocationProductRelation.AddRelationItemCode(locid, productId, userid, ItemCode);
+                isSucess = _ProductLogic.AddRelationItemCode(locid, productId, userid, ItemCode);
                 if(isSucess)
                 {
                     body = JsonSerializer.Serialize(isSucess);

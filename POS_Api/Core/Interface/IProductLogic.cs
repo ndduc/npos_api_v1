@@ -14,5 +14,6 @@ namespace POS_Api.Core.Interface
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId);
 
         public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param);
+        public bool AddRelationItemCode(string locationId, string productId, string userId, string itemCode);
     }
 }

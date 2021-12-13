@@ -20,14 +20,11 @@ namespace POS_Api.Core.Implementation
 {
     public class ProductLogic : BaseHelper, IProductLogic
     {
-
-        private readonly ILocationProductRelationLogic _locationProductRelationLogic;
         private readonly IProductRepos _productRepos;
         private readonly IUserRepos _userRepos;
         public ProductLogic()
         {
             _userRepos = new UserRepos();
-            _locationProductRelationLogic = new LocationProductRelationLogic();
             _productRepos = new ProductRepos();
         }
 
@@ -118,6 +115,11 @@ namespace POS_Api.Core.Implementation
         public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param)
         {
             return _productRepos.GetProductByIdWithMapExecution(userId, locationId, param);
+        }
+
+        public bool AddRelationItemCode(string locationId, string productId, string userId, string itemCode)
+        {
+            return _productRepos.AddRelationItemCode(locationId, productId, userId, itemCode);
         }
     }
 }
