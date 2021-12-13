@@ -43,12 +43,12 @@ namespace POS_Api.Controllers
             _LocationUserReLogic = new LocationUserRelationLogic(_UserLogic);
             _UserLogicParent = new UserLogic(_LocationUserReLogic);
             _LocationProductRelation = new LocationProductRelationLogic();
-            _categoryLogic = new CategoryLogic(_UserLogic, _LocationLogic);
-            _departmentLogic = new DepartmentLogic(_UserLogic, _LocationLogic);
-            _discountLogic = new DiscountLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
-            _sectionLogic = new SectionLogic(_UserLogic, _LocationLogic);
-            _taxLogic = new TaxLogic(_UserLogic, _LocationLogic, _ProductLogic, _LocationProductRelation);
-            _vendorLogic = new VendorLogic(_UserLogic, _LocationLogic);
+            _categoryLogic = new CategoryLogic(_UserLogic);
+            _departmentLogic = new DepartmentLogic(_UserLogic);
+            _discountLogic = new DiscountLogic(_UserLogic, _ProductLogic, _LocationProductRelation);
+            _sectionLogic = new SectionLogic(_UserLogic);
+            _taxLogic = new TaxLogic(_UserLogic, _ProductLogic, _LocationProductRelation);
+            _vendorLogic = new VendorLogic(_UserLogic);
         }
 
         #region USER SECTION

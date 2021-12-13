@@ -17,19 +17,20 @@ namespace POS_Api.Core.Implementation
     public class CategoryLogic: BaseHelper, ICategoryLogic
     {
         private readonly IUserLogic _userLogic;
-        private readonly ILocationLogic _locationLogic;
         private readonly ICategoryRepos _categoryRepos;
-        public CategoryLogic(IUserLogic userLogic, ILocationLogic locationLogic)
+
+        private readonly ILocationRepos _locationRepos;
+        public CategoryLogic(IUserLogic userLogic)
         {
             _userLogic = userLogic;
-            _locationLogic = locationLogic;
             _categoryRepos = new CategoryRepos();
+            _locationRepos = new LocationRepos();
         }
 
         public bool UpdateCategory(CategoryModel model, string userId, string locationId)
         {
             bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
             {
@@ -48,7 +49,7 @@ namespace POS_Api.Core.Implementation
 
         public List<CategoryModel> GetCategoryByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _categoryRepos.GetCategoryByLocationIdExecution(locationId);
             }
@@ -68,7 +69,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _categoryRepos.VerifyUIdUnique(id);
             }
-            if(_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if(_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -83,7 +84,7 @@ namespace POS_Api.Core.Implementation
         public bool AddCategoryProductRelation(string uid, string productId, string locationId, string userId)
         {
             if (_userLogic.VerifyUser(userId) 
-                && _locationLogic.VerifyUIdExist(locationId)
+                && _locationRepos.VerifyUIdExist(locationId)
                 && _categoryRepos.VerifyUIdExist(uid)
                 && !_categoryRepos.VerifyCategoryProductRelationExist(uid, productId, locationId)) {
 

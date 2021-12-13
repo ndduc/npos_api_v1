@@ -2,6 +2,8 @@
 using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
+using POS_Api.Repository.Implementation;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -15,17 +17,17 @@ namespace POS_Api.Core.Implementation
     public class VendorLogic : BaseHelper, IVendorLogic
     {
         private readonly IUserLogic _userLogic;
-        private readonly ILocationLogic _locationLogic;
-        public VendorLogic(IUserLogic userLogic, ILocationLogic locationLogic)
+        private readonly ILocationRepos _locationRepos;
+        public VendorLogic(IUserLogic userLogic)
         {
+            _locationRepos = new LocationRepos();
             _userLogic = userLogic;
-            _locationLogic = locationLogic;
         }
 
         public bool UpdateVendor(VendorModel model, string userId, string locationId)
         {
             bool isUserValid = _userLogic.VerifyUser(userId);
-            bool isLocationValid = _locationLogic.VerifyUIdExist(locationId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
             {
@@ -75,7 +77,7 @@ namespace POS_Api.Core.Implementation
 
         public List<VendorModel> GetVendorByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return GetVendorByLocationIdExecution(locationId);
             }
@@ -150,7 +152,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationLogic.VerifyUIdExist(locationId))
+            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -199,7 +201,7 @@ namespace POS_Api.Core.Implementation
         public bool AddVendorProductRelation(string uid, string productId, string locationId, string userId)
         {
             if (_userLogic.VerifyUser(userId)
-                && _locationLogic.VerifyUIdExist(locationId)
+                && _locationRepos.VerifyUIdExist(locationId)
                 && VerifyUIdExist(uid)
                 && !VerifyVendorProductRelationExist(uid, productId, locationId))
             {
