@@ -16,20 +16,20 @@ namespace POS_Api.Core.Implementation
 {
     public class DepartmentLogic : BaseHelper, IDepartmentLogic
     {
-        private readonly IUserLogic _userLogic;
-
         private readonly ILocationRepos _locationRepos;
         private readonly IDepartmentRepos _departmentRepos;
-        public DepartmentLogic(IUserLogic userLogic)
+
+        private readonly IUserRepos _userRepos;
+        public DepartmentLogic()
         {
-            _userLogic = userLogic;
             _departmentRepos = new DepartmentRepos();
             _locationRepos = new LocationRepos();
+            _userRepos = new UserRepos();
         }
 
         public bool UpdateDepartment(DepartmentModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
@@ -49,7 +49,7 @@ namespace POS_Api.Core.Implementation
 
         public List<DepartmentModel> GetDepartmentByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _departmentRepos.GetDepartmentByLocationIdExecution(locationId);
             }
@@ -69,7 +69,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _departmentRepos.VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -85,7 +85,7 @@ namespace POS_Api.Core.Implementation
 
         public bool AddDepartmentProductRelation(string uid, string productId, string locationId, string userId)
         {
-            if (_userLogic.VerifyUser(userId)
+            if (_userRepos.VerifyUser(userId)
                 && _locationRepos.VerifyUIdExist(locationId)
                 && _departmentRepos.VerifyUIdExist(uid)
                 && !_departmentRepos.VerifyDepartmentProductRelationExist(uid, productId, locationId))

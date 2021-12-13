@@ -18,11 +18,11 @@ namespace POS_Api.Repository.Implementation
 {
     public class ProductRepos : BaseHelper, IProductRepos
     {
-        private readonly IUserLogic _userLogic;
+        private readonly IUserRepos _userRepos;
 
-        public ProductRepos(IUserLogic userLogic)
+        public ProductRepos()
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
         }
 
         public IEnumerable<ProductModel> GetProductByLocationExecution(string locId)
@@ -359,7 +359,7 @@ namespace POS_Api.Repository.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Argument"));
             }
 
-            if (_userLogic.VerifyUser(userId))
+            if (_userRepos.VerifyUser(userId))
             {
                 ProductModel model = GetProductByIdExecution(locationId, whereClause);
 

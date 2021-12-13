@@ -18,15 +18,12 @@ namespace POS_Api.Core.Implementation
 {
     public class LocationLogic : BaseHelper, ILocationLogic
     {
-
-        private readonly IUserLogic _userLogic;
         private readonly ILocationUserRelationLogic _locationRelaationLogic;
 
         private readonly ILocationRepos _locationRepos;
-        public LocationLogic(IUserLogic userLogic)
+        public LocationLogic()
         {
-            _userLogic = userLogic;
-            _locationRelaationLogic = new LocationUserRelationLogic(_userLogic);
+            _locationRelaationLogic = new LocationUserRelationLogic();
             _locationRepos = new LocationRepos();
         }
 

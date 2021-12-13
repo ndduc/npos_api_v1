@@ -16,24 +16,24 @@ namespace POS_Api.Core.Implementation
 {
     public class TaxLogic : BaseHelper, ITaxLogic
     {
-        private readonly IUserLogic _userLogic;
         private readonly ILocationProductRelationLogic _productLocationRelationLogic;
         private readonly ILocationRepos _locationRepos;
         private readonly IProductRepos _productRepos;
         private readonly ITaxRepos _taxRepos;
-        public TaxLogic(IUserLogic userLogic, ILocationProductRelationLogic productLocationRelationLogic)
+        private readonly IUserRepos _userRepos;
+        public TaxLogic(ILocationProductRelationLogic productLocationRelationLogic)
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
             _productLocationRelationLogic = productLocationRelationLogic;
             _locationRepos = new LocationRepos();
-            _productRepos = new ProductRepos(_userLogic);
+            _productRepos = new ProductRepos();
             _taxRepos = new TaxRepos();
         }
 
         // Update Tax Rate and Desc
         public bool UpdateTax(TaxModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if(!isUserValid)
@@ -60,7 +60,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _taxRepos.VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -75,7 +75,7 @@ namespace POS_Api.Core.Implementation
 
         public bool AddTaxProductRelation(string productId, string locationId, string taxId, string userId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
             bool isTaxValid = _taxRepos.VerifyUIdExist(taxId);
             bool isProductValid = _productRepos.VerifyUIdExist(productId);
@@ -118,7 +118,7 @@ namespace POS_Api.Core.Implementation
 
         public List<TaxModel> GetTaxByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _taxRepos.GetTaxByLocationIdExecution(locationId);
             }

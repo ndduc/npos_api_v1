@@ -16,19 +16,19 @@ namespace POS_Api.Core.Implementation
 {
     public class SectionLogic : BaseHelper, ISectionLogic
     {
-        private readonly IUserLogic _userLogic;
         private readonly ILocationRepos _locationRepos;
         private readonly ISectionRepos _sectionRepos;
-        public SectionLogic(IUserLogic userLogic)
+        private readonly IUserRepos _userRepos;
+        public SectionLogic()
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
             _locationRepos = new LocationRepos();
             _sectionRepos = new SectionRepos();
         }
 
         public bool UpdateSection(SectionModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
@@ -48,7 +48,7 @@ namespace POS_Api.Core.Implementation
 
         public List<SectionModel> GetSectionByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _sectionRepos.GetSectionByLocationIdExecution(locationId);
             }
@@ -69,7 +69,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _sectionRepos.VerifyUIdUnique(id);
             }
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -86,7 +86,7 @@ namespace POS_Api.Core.Implementation
 
         public bool AddSectionProductRelation(string uid, string productId, string locationId, string userId)
         {
-            if (_userLogic.VerifyUser(userId)
+            if (_userRepos.VerifyUser(userId)
                 && _locationRepos.VerifyUIdExist(locationId)
                 && _sectionRepos.VerifyUIdExist(uid)
                 && !_sectionRepos.VerifySectionProductRelationExist(uid, productId, locationId))

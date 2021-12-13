@@ -3,6 +3,8 @@ using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
 using POS_Api.Model.EnumData;
+using POS_Api.Repository.Implementation;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -17,11 +19,11 @@ namespace POS_Api.Core.Implementation
     public class LocationUserRelationLogic : BaseHelper, ILocationUserRelationLogic
     {
         
-        private readonly IUserLogic _userLogic;
+        private readonly IUserRepos _userRepos;
 
-        public LocationUserRelationLogic(IUserLogic userLogic)
+        public LocationUserRelationLogic()
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
         }
 
         public bool IsRelationLocationUserExist(string userId, string locationId, string reason)
@@ -61,13 +63,13 @@ namespace POS_Api.Core.Implementation
             string authority;
             if (muserId == null)
             {
-                authority = _userLogic.VerifyUserAuthority(userId);
+                authority = _userRepos.VerifyUserAuthority(userId);
                 isRelationExist = IsRelationLocationUserExist(userId, locationId, reason);
                 isAuthrozied = true;
             }
             else
             {
-                authority = _userLogic.VerifyUserAuthority(muserId);
+                authority = _userRepos.VerifyUserAuthority(muserId);
                 isRelationExist = IsRelationLocationUserExist(userId, locationId, reason);
                 isAuthrozied = true;
             }

@@ -16,15 +16,9 @@ namespace POS_Api.Core.Interface
 
         public bool UpdatePassword(UserModel userModel);
 
-        public bool VerifyUserName(string userName);
-
-        public string VerifyUserAuthority(string uid);
-
-        public bool VerifyUIdUnique(string uid);
 
         public bool AddUserWithParent(UserModel userModel, string parentId, string locationId, string type);
 
-        public bool VerifyUser(string uid);
 
     }
 }

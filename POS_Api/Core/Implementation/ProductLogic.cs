@@ -21,14 +21,14 @@ namespace POS_Api.Core.Implementation
     public class ProductLogic : BaseHelper, IProductLogic
     {
 
-        private readonly IUserLogic _userLogic;
         private readonly ILocationProductRelationLogic _locationProductRelationLogic;
         private readonly IProductRepos _productRepos;
-        public ProductLogic(IUserLogic userLogic)
+        private readonly IUserRepos _userRepos;
+        public ProductLogic()
         {
-            _userLogic = userLogic;
+            _userRepos = new UserRepos();
             _locationProductRelationLogic = new LocationProductRelationLogic();
-            _productRepos = new ProductRepos(_userLogic);
+            _productRepos = new ProductRepos();
         }
 
         public bool AddProduct(ProductModel model, string userId, string locationId)
@@ -44,7 +44,7 @@ namespace POS_Api.Core.Implementation
                 isUnqiue = _productRepos.VerifyUIdUnique(id);
             }
 
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if(isUserValid)
             {
@@ -73,7 +73,7 @@ namespace POS_Api.Core.Implementation
             bool isUserValid = false;
             bool isSucess = false;
             bool isRelationSucess = false;
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if (isUserValid)
             {
@@ -104,7 +104,7 @@ namespace POS_Api.Core.Implementation
 
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId))
+            if (_userRepos.VerifyUser(userId))
             {
                 return _productRepos.GetProductByLocationExecution(locationId);
             }

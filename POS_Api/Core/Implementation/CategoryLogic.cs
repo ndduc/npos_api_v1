@@ -16,20 +16,19 @@ namespace POS_Api.Core.Implementation
 {
     public class CategoryLogic: BaseHelper, ICategoryLogic
     {
-        private readonly IUserLogic _userLogic;
         private readonly ICategoryRepos _categoryRepos;
-
+        private readonly IUserRepos _userRepos;
         private readonly ILocationRepos _locationRepos;
-        public CategoryLogic(IUserLogic userLogic)
+        public CategoryLogic()
         {
-            _userLogic = userLogic;
             _categoryRepos = new CategoryRepos();
             _locationRepos = new LocationRepos();
+            _userRepos = new UserRepos();
         }
 
         public bool UpdateCategory(CategoryModel model, string userId, string locationId)
         {
-            bool isUserValid = _userLogic.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
             if (!isUserValid)
@@ -49,7 +48,7 @@ namespace POS_Api.Core.Implementation
 
         public List<CategoryModel> GetCategoryByLocationId(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 return _categoryRepos.GetCategoryByLocationIdExecution(locationId);
             }
@@ -69,7 +68,7 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _categoryRepos.VerifyUIdUnique(id);
             }
-            if(_userLogic.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if(_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -83,7 +82,7 @@ namespace POS_Api.Core.Implementation
 
         public bool AddCategoryProductRelation(string uid, string productId, string locationId, string userId)
         {
-            if (_userLogic.VerifyUser(userId) 
+            if (_userRepos.VerifyUser(userId) 
                 && _locationRepos.VerifyUIdExist(locationId)
                 && _categoryRepos.VerifyUIdExist(uid)
                 && !_categoryRepos.VerifyCategoryProductRelationExist(uid, productId, locationId)) {
