@@ -47,7 +47,7 @@ namespace POS_Api.Controllers
             _departmentLogic = new DepartmentLogic(_UserLogic);
             _discountLogic = new DiscountLogic(_UserLogic, _ProductLogic, _LocationProductRelation);
             _sectionLogic = new SectionLogic(_UserLogic);
-            _taxLogic = new TaxLogic(_UserLogic, _ProductLogic, _LocationProductRelation);
+            _taxLogic = new TaxLogic(_UserLogic, _LocationProductRelation);
             _vendorLogic = new VendorLogic(_UserLogic);
         }
 
