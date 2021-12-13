@@ -22,7 +22,6 @@ namespace POS_Api.Controllers
     {
         private readonly IUserLogic _UserLogic, _UserLogicParent;
         private readonly ILocationLogic _LocationLogic;
-        private readonly ILocationUserRelationLogic _LocationUserReLogic;
         private readonly IProductLogic _ProductLogic;
         private readonly ICategoryLogic _categoryLogic;
         private readonly IDepartmentLogic _departmentLogic;
@@ -39,8 +38,7 @@ namespace POS_Api.Controllers
             _UserLogic = new UserLogic();
             _LocationLogic = new LocationLogic();
             _ProductLogic = new ProductLogic();
-            _LocationUserReLogic = new LocationUserRelationLogic();
-            _UserLogicParent = new UserLogic(_LocationUserReLogic);
+            _UserLogicParent = new UserLogic();
             _categoryLogic = new CategoryLogic();
             _departmentLogic = new DepartmentLogic();
             _discountLogic = new DiscountLogic();
@@ -289,10 +287,10 @@ namespace POS_Api.Controllers
 
                 if(muserid == null || muserid.Length < 5)
                 {
-                    isSuccess = _LocationUserReLogic.AddRelationLocationUser(null, userid, locaid, type.ToString().ToUpper());
+                    isSuccess = _UserLogic.AddRelationLocationUser(null, userid, locaid, type.ToString().ToUpper());
                 } else
                 {
-                    isSuccess = _LocationUserReLogic.AddRelationLocationUser(muserid, userid, locaid, type.ToString().ToUpper());
+                    isSuccess = _UserLogic.AddRelationLocationUser(muserid, userid, locaid, type.ToString().ToUpper());
                 }
                 if (isSuccess)
                 {

@@ -17,5 +17,9 @@ namespace POS_Api.Repository.Interface
 
         public bool UpdateUserExecution(UserModel userModel);
         public bool UpdatePasswordExecution(UserModel userModel);
+
+        public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason);
+
+        public bool IsRelationLocationUserExist(string userId, string locationId, string reason);
     }
 }

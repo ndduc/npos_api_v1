@@ -19,6 +19,8 @@ namespace POS_Api.Core.Interface
 
         public bool AddUserWithParent(UserModel userModel, string parentId, string locationId, string type);
 
+        public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason);
+
 
     }
 }

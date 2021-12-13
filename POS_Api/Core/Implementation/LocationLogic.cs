@@ -18,12 +18,12 @@ namespace POS_Api.Core.Implementation
 {
     public class LocationLogic : BaseHelper, ILocationLogic
     {
-        private readonly ILocationUserRelationLogic _locationRelaationLogic;
+        private readonly IUserRepos _userRepos;
 
         private readonly ILocationRepos _locationRepos;
         public LocationLogic()
         {
-            _locationRelaationLogic = new LocationUserRelationLogic();
+            _userRepos = new UserRepos();
             _locationRepos = new LocationRepos();
         }
 
@@ -39,7 +39,7 @@ namespace POS_Api.Core.Implementation
             }
             model.UId = id;
             bool isInserted = _locationRepos.AddLocationExecution(model);
-            bool isRelation = _locationRelaationLogic.AddRelationLocationUser(null, userId, id, GenericEnumType.UserLocationType.CREATED.ToString());
+            bool isRelation = _userRepos.AddRelationLocationUser(null, userId, id, GenericEnumType.UserLocationType.CREATED.ToString());
 
             // Insert Record, return false if the insertion false
             if (isInserted && isRelation)
