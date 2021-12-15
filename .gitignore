@@ -51,6 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-.dtbcache
-.v2
-.suo
+*.dtbcache
+*.v2
+*.suo
