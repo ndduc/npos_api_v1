@@ -50,3 +50,11 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Console App
+*/ConsoleApp/bin
+*/ConsoleApp/obj
+
+#ASP
+*/POS_Api/bin
+*/POS_Api/obj
