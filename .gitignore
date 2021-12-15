@@ -50,3 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+.vs/POS_Api/DesignTimeBuild/.dtbcache.v2
+.vs/POS_Api/v16/.suo
