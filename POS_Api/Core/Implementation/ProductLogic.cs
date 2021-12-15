@@ -3,6 +3,10 @@ using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
 using POS_Api.Model.EnumData;
+using POS_Api.Model.ReponseViewModel;
+using POS_Api.Model.ViewModel;
+using POS_Api.Repository.Implementation;
+using POS_Api.Repository.Interface;
 using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
@@ -17,13 +21,27 @@ namespace POS_Api.Core.Implementation
 {
     public class ProductLogic : BaseHelper, IProductLogic
     {
+        private readonly IProductRepos _productRepos;
+        private readonly IUserRepos _userRepos;
+        private readonly ILocationRepos _locationRepos;
 
-        private readonly IUserLogic _userLogic;
-        private readonly ILocationProductRelationLogic _locationProductRelationLogic;
-        public ProductLogic(IUserLogic userLogic)
+        private readonly IDepartmentRepos _departmentRepos;
+        private readonly ICategoryRepos _categoryRepos;
+        private readonly IVendorRepos _vendorRepos;
+        private readonly ISectionRepos _sectionRepos;
+        private readonly IDiscountRepos _discountRepos;
+        private readonly ITaxRepos _taxRepos;
+        public ProductLogic()
         {
-            _userLogic = userLogic;
-            _locationProductRelationLogic = new LocationProductRelationLogic();
+            _userRepos = new UserRepos();
+            _productRepos = new ProductRepos();
+            _locationRepos = new LocationRepos();
+            _departmentRepos = new DepartmentRepos();
+            _categoryRepos = new CategoryRepos();
+            _vendorRepos = new VendorRepos();
+            _sectionRepos = new SectionRepos();
+            _discountRepos = new DiscountRepos();
+            _taxRepos = new TaxRepos();
         }
 
         public bool AddProduct(ProductModel model, string userId, string locationId)
@@ -36,21 +54,21 @@ namespace POS_Api.Core.Implementation
             while (!isUnqiue)
             {
                 id = Guid.NewGuid().ToString();
-                isUnqiue = VerifyUIdUnique(id);
+                isUnqiue = _productRepos.VerifyUIdUnique(id);
             }
 
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if(isUserValid)
             {
                 model.UId = id;
                 model.AddedBy = userId;
 
-                isSucess = AddProductExecution(model);
+                isSucess = _productRepos.AddProductExecution(model);
 
                 if (isSucess)
                 {
-                    return AddProductExecutionRelation(model, userId, locationId);
+                    return _productRepos.AddProductExecutionRelation(model, userId, locationId);
                 } else
                 {
                     return isSucess;
@@ -62,19 +80,243 @@ namespace POS_Api.Core.Implementation
 
         }
 
+        public ProductAddModelVm AddProduct(ProductModel model, Dictionary<string, string> param)
+        {
+            string id = null;
+            bool isUnqiue = false;
+
+            param.TryGetValue("userid", out string userId);
+            param.TryGetValue("locid", out string locId);
+            param.TryGetValue("departmentList", out string dept);
+            param.TryGetValue("categoryList", out string cate);
+            param.TryGetValue("vendorList", out string ven);
+            param.TryGetValue("sectionList", out string sec);
+            param.TryGetValue("discount", out string discount);
+            param.TryGetValue("tax", out string tax);
+            param.TryGetValue("itemCodeList", out string itemCode);
+            param.TryGetValue("upcList", out string upc);
+
+
+
+            // Verify User
+            bool isUserValid = _userRepos.VerifyUser(userId);   
+            // Verify Location
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locId);
+
+            if(!isUserValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
+            }
+
+            if(!isLocationValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+            }
+
+
+            while (!isUnqiue)
+            {
+                id = Guid.NewGuid().ToString();
+                isUnqiue = _productRepos.VerifyUIdUnique(id);
+            }
+
+            // Do Check Relation Check
+            // No Need To Check Product Location Relation as the product uid is always new
+
+            List<string> deptList = GetListFromString(dept);
+            List<string> cateList = GetListFromString(cate);
+            List<string> venList = GetListFromString(ven);
+            List<string> secList = GetListFromString(sec);
+            List<string> itemCodeList = GetListFromString(itemCode);
+            List<string> upcList = GetListFromString(upc);
+            List<string> taxList = GetListFromString(tax);
+            List<string> discountList = GetListFromString(discount);
+
+            if(itemCodeList.Count > 0)
+            {
+                model.ItemCode = 1;
+            } else
+            {
+                model.ItemCode = 0;
+            }
+
+            if (upcList.Count > 0)
+            {
+                model.Upc = 1;
+            }
+            else
+            {
+                model.Upc = 0;
+            }
+
+            model.UId = id;
+            model.AddedBy = userId;
+
+            bool isSucess = _productRepos.AddProductExecution(model);
+
+            ProductAddModelVm responseModel = new ProductAddModelVm();
+
+            if (isSucess)
+            {
+                bool isProductLocationRelationSucess = _productRepos.AddProductExecutionRelation(model, userId, locId);
+
+                bool isDepartmentSucess = AddProductFunctionHelper(deptList, model.UId, userId, locId, "DEPARTMENT");
+                bool isCategorySucess = AddProductFunctionHelper(cateList, model.UId, userId, locId, "CATEGORY");
+                bool isVendorSucess = AddProductFunctionHelper(venList, model.UId, userId, locId, "VENDOR");
+                bool isSectionSucess = AddProductFunctionHelper(secList, model.UId, userId, locId, "SECTION");
+                bool isTaxSucess = AddProductFunctionHelper(taxList, model.UId, userId, locId, "TAX");
+                bool isDiscountSucess = AddProductFunctionHelper(discountList, model.UId, userId, locId, "DISCOUNT");
+                bool isItemCodeSucess = AddProductFunctionHelper(itemCodeList, model.UId, userId, locId, "ITEMCODE");
+                bool isUpcSucess = AddProductFunctionHelper(upcList, model.UId, userId, locId, "UPC");
+
+                // Still Missing Upc Logic
+
+                #region SET RESPONSE MODEL
+                if (isProductLocationRelationSucess)
+                {
+                    responseModel.Product_Location_Status = "OK";
+                } else
+                {
+                    responseModel.Product_Location_Status = "FAILED";
+                }
+
+                if (isDepartmentSucess)
+                {
+                    responseModel.Product_Department = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Department = "FAILED";
+                }
+
+                if (isCategorySucess)
+                {
+                    responseModel.Product_Category = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Category = "FAILED";
+                }
+
+                if (isVendorSucess)
+                {
+                    responseModel.Product_Vendor = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Vendor = "FAILED";
+                }
+
+                if (isSectionSucess)
+                {
+
+                    responseModel.Product_Section = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Section = "FAILED";
+                }
+
+                if (isTaxSucess)
+                {
+                    responseModel.Product_Tax = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Tax = "FAILED";
+                }
+
+                if (isDiscountSucess)
+                {
+                    responseModel.Product_Discount = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Discount = "FAILED";
+                }
+
+                if (isItemCodeSucess)
+                {
+                    responseModel.Product_ItemCode = "OK";
+                }
+                else
+                {
+                    responseModel.Product_ItemCode = "FAILED";
+                }
+
+                if (isUpcSucess)
+                {
+                    responseModel.Product_Upc = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Upc = "FAILED";
+                }
+                #endregion
+
+                return responseModel;
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Product Is Not Sucessfully Added"));
+            }
+        }
+
+        private bool AddProductFunctionHelper(List<string> itemList, string productId, string userId, string locationId, string option)
+        {
+            bool checker = false;
+
+            if(itemList.Count > 0)
+            {
+                switch (option)
+                {
+                    case "CATEGORY":
+                        checker = _categoryRepos.AddCategoryExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "DEPARTMENT":
+                        checker = _departmentRepos.AddDepartmentExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "SECTION":
+                        checker = _sectionRepos.AddSectionExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "VENDOR":
+                        checker = _vendorRepos.AddVendorExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "TAX":
+                        checker = _taxRepos.AddTaxExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "DISCOUNT":
+                        checker = _discountRepos.AddDiscountExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "ITEMCODE":
+                        checker = AddItemCodeExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    case "UPC":
+                        checker = AddUpcExecutionFromList(itemList, productId, locationId, userId);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            return checker;
+        }
+
+   
+
         public bool UpdateProduct(ProductModel model, string userId, string locationId)
         {
             bool isUnqiue = false;
             bool isUserValid = false;
             bool isSucess = false;
             bool isRelationSucess = false;
-            isUserValid = _userLogic.VerifyUser(userId);
+            isUserValid = _userRepos.VerifyUser(userId);
 
             if (isUserValid)
             {
                 model.UpdatedBy = userId;
 
-                isSucess = UpdateProductExecution(model);
+                isSucess = _productRepos.UpdateProductExecution(model);
 
                 if (isSucess)
                 {
@@ -82,7 +324,7 @@ namespace POS_Api.Core.Implementation
                     while (!isRelationSucess && retry > 5)
                     {
                         retry++;
-                        isRelationSucess = UpdateProductExecutionRelation(model, locationId);
+                        isRelationSucess = _productRepos.UpdateProductExecutionRelation(model, locationId);
                     }
                     return true;
                 }
@@ -99,9 +341,9 @@ namespace POS_Api.Core.Implementation
 
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId)
         {
-            if (_userLogic.VerifyUser(userId))
+            if (_userRepos.VerifyUser(userId))
             {
-                return GetProductByLocationExecution(locationId);
+                return _productRepos.GetProductByLocationExecution(locationId);
             }
             else
             {
@@ -109,317 +351,100 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        private IEnumerable<ProductModel> GetProductByLocationExecution(string locId)
-        {
-            List<ProductModel> productList = new List<ProductModel>();
-            this.Conn = new DBConnection();
-            string query = "SELECT AL.* FROM asset_product AS AL"
-                        + " INNER JOIN ref_location_product AS RLP"
-                        + " ON AL.uid = RLP.product_uid"
-                        + " AND RLP.location_uid = "
-                        + DbHelper.SetDBValue(locId, true)
-                        + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
-                        + " LIMIT 20; ";
-            if (Conn.IsConnect())
-            {
-                Cmd = new MySqlCommand(query, this.Conn.Connection);
-                Reader = Cmd.ExecuteReader();
-                while (Reader.Read())
-                {
-                    ProductModel model = new ProductModel(
-                        DbHelper.TryGet(Reader, "uid"),
-                        DbHelper.TryGet(Reader, "description"),
-                        DbHelper.TryGet(Reader, "second_description"),
-                        DbHelper.TryGet(Reader, "third_description"),
-                        DbHelper.TryGet(Reader, "upc"),
-                        double.Parse(DbHelper.TryGet(Reader, "cost")),
-                        double.Parse(DbHelper.TryGet(Reader, "price")),
-                        DbHelper.TryGet(Reader, "added_datetime"),
-                        DbHelper.TryGet(Reader, "updated_datetime"),
-                        DbHelper.TryGet(Reader, "added_by"),
-                        DbHelper.TryGet(Reader, "updated_by")
-                    );
-                    productList.Add(model);
-                }
-                this.Conn.Close();
-                if(productList.Count > 0)
-                {
-                    return productList;
-                } else
-                {
-                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
-                }
-            } else
-            {
-                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-            }
 
+        public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param)
+        {
+            return _productRepos.GetProductByIdWithMapExecution(userId, locationId, param);
         }
 
-        public ProductModel GetProductById(string userId, string locationId, Dictionary<string, string> param)
+        public bool AddRelationItemCode(string locationId, string productId, string userId, string itemCode)
         {
-            param.TryGetValue("uid", out string uid);
+            return _productRepos.AddRelationItemCode(locationId, productId, userId, itemCode);
+        }
+
+        public bool AddRelationUpc(string locationId, string productId, string userId, string upc)
+        {
+            return _productRepos.AddRelationUpc(locationId, productId, userId, upc);
+        }
+
+        private bool AddItemCodeExecutionFromList(List<string> itemCodeList, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in itemCodeList)
+            {
+                exectutedList.Add(AddRelationItemCode(locationId, productId, userId, item));
+            }
+
+            if (exectutedList.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private bool AddUpcExecutionFromList(List<string> upcList, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in upcList)
+            {
+                exectutedList.Add(AddRelationUpc(locationId, productId, userId, item));
+            }
+
+            if (exectutedList.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+        public int GetProductPaginateCount(Dictionary<string, string> param)
+        {
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("searchType", out string searchType);
+            try
+            {
+                return _productRepos.GetProductPaginateCount(locationId);
+                // Search Type indicate search by default (locId) or itemId, etc ...
+            } catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }   
+        }
+
+        public IEnumerable<ProductModel> GetProductPaginate(Dictionary<string, string> param)
+        {
+
+            param.TryGetValue("locationId", out string locationId);
             param.TryGetValue("itemCode", out string itemCode);
-            param.TryGetValue("upc", out string upc);
-            string whereClause;
-            if(uid != null)
-            {
-                whereClause = " WHERE AP.uid = " + DbHelper.SetDBValue(uid, true) + " ";
-            } else if (itemCode != null)
-            {
-                whereClause = " INNER JOIN REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
-                                + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.item_code = " + DbHelper.SetDBValue(itemCode, true) + " ";
-            } else if (upc != null)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Not Implemented"));
-            } else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Argument"));
-            }
+            param.TryGetValue("startIdx", out string startIdx);
+            param.TryGetValue("endIdx", out string endIdx);
 
-            if(_userLogic.VerifyUser(userId))
-            {
-                return GetProductByIdExecution(locationId, whereClause);
-            } else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Authorized User"));
-            }
-        }
-
-        private ProductModel GetProductByIdExecution(string locationId, string where)
-        {
-            ProductModel model = null;
-            Conn = new DBConnection();
-            string query = "SELECT AP.* FROM ASSET_PRODUCT AS AP "
-                            + " INNER JOIN REF_LOCATION_PRODUCT AS RLP "
-                            + " ON AP.uid = RLP.product_uid AND RLP.location_uid = " + DbHelper.SetDBValue(locationId, true)
-                            + " " + where
-                            + " LIMIT 1;";
-            Debug.WriteLine(query);
             try
             {
-                if(Conn.IsConnect())
+                if ( locationId != null)
                 {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    Reader = Cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        model = new ProductModel() {
-                            UId = DbHelper.TryGet(Reader, "uid"),
-                            Description = DbHelper.TryGet(Reader, "description"),
-                            SecondDescription = DbHelper.TryGet(Reader, "second_description"),
-                            ThirdDescription = DbHelper.TryGet(Reader, "third_description"),
-                            ItemCode = DbHelper.TryGet(Reader, "rel_item_code"),
-                            Cost = double.Parse(DbHelper.TryGet(Reader, "cost")),
-                            Price = double.Parse(DbHelper.TryGet(Reader, "price")),
-                            AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
-                            UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
-                            AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                            UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
-                        };
-                    }
-                    Conn.Close();
+                    return _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                } else if (itemCode != null)
+                {
+                    // add repos call the get product by item here
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
                 } else
                 {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-                }
-            } catch(Exception e)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            if (model != null)
-            {
-                List<string> itemCodeList = GetProductItemCode(locationId, model.UId);
-                model.ItemCodeList = itemCodeList;
-                return model;
-            }
-            else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
-            }
-        }
-
-        private List<string> GetProductItemCode(string locationId, string productId)
-        {
-            List<string> listItemCode = new List<string>();
-            Conn = new DBConnection();
-            string query = "SELECT RLPI.item_code FROM REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
-                          + " WHERE product_uid = " + DbHelper.SetDBValue(productId, true) 
-                          + " AND location_uid = " + DbHelper.SetDBValue(locationId, true) 
-                          +  " ;";
-            Debug.WriteLine(query);
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    Reader = Cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        string itemCode = DbHelper.TryGet(Reader, "item_code");
-                        listItemCode.Add(itemCode);
-                    }
-                    Conn.Close();
-                }
-                else
-                {
-                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
                 }
             }
             catch (Exception e)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
             }
-            return listItemCode;
         }
-
-        private bool VerifyUIdUnique(string uid)
-        {
-            this.Conn = new DBConnection();
-            string id = null;
-            string query = "SELECT uid FROM asset_location WHERE uid = " + DbHelper.SetDBValue(uid, true) + ";";
-            if (Conn.IsConnect())
-            {
-                Cmd = new MySqlCommand(query, this.Conn.Connection);
-                Reader = Cmd.ExecuteReader();
-                while (Reader.Read())
-                {
-                    id = DbHelper.TryGet(Reader, "uid");
-                }
-                this.Conn.Close();
-            }
-            else
-            {
-                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
-            }
-
-            return VerifyNotExist(id);
-        }
-
-        private bool AddProductExecution(ProductModel model)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-
-            string query = "INSERT INTO asset_product"
-                + " (`uid`,`description`,`second_description`, `third_description`, `upc`, `cost`, `price`,`added_by`)"
-                + " VALUES ( "
-                + DbHelper.SetDBValue(model.UId, false)
-                + DbHelper.SetDBValue(model.Description, false)
-                + DbHelper.SetDBValueNull(model.SecondDescription, false)
-                + DbHelper.SetDBValueNull(model.ThirdDescription, false)
-                + DbHelper.SetDBValueNull(model.Upc, false)
-                + DbHelper.SetDBValueNull(model.Cost.ToString(), false)
-                + DbHelper.SetDBValue(model.Price.ToString(), false)
-                + DbHelper.SetDBValue(model.AddedBy, true)
-                + " );";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                }
-                this.Conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw DbInsertException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            return CheckInsertionHelper(res);
-        }
-        
-        private bool AddProductExecutionRelation(ProductModel model, string userId, string locationId)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-
-            string query = "INSERT INTO ref_location_product"
-                + " (`product_uid`,`location_uid`, `added_by`)"
-                + " VALUES ( "
-                + DbHelper.SetDBValue(model.UId, false)
-                + DbHelper.SetDBValue(locationId, false)
-                + DbHelper.SetDBValue(userId, true)
-                + " );";
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                }
-                this.Conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw DbInsertException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-
-            return CheckInsertionHelper(res);
-        }
-
-        private bool UpdateProductExecution(ProductModel model)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-
-            string query = "UPDATE asset_product"
-                + " SET "
-                + " `description` = " + DbHelper.SetDBValue(model.Description, false)
-                + " `second_description` = " + DbHelper.SetDBValueNull(model.SecondDescription, false)
-                + " `third_description` = " + DbHelper.SetDBValueNull(model.ThirdDescription, false)
-                + " `upc` = " + DbHelper.SetDBValueNull(model.Upc, false)
-                + " `cost` = " + DbHelper.SetDBValueNull(model.Cost, false)
-                + " `price` = " + DbHelper.SetDBValue(model.Price.ToString(), false)
-                + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
-                + " WHERE uid = " + DbHelper.SetDBValue(model.UId, true);
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                }
-                this.Conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw DbUpdateException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-
-            return CheckInsertionHelper(res);
-        }
-
-        private bool UpdateProductExecutionRelation(ProductModel model, string locationId)
-        {
-            int res = 0;
-            Conn = new DBConnection();
-            string query = " UPDATE ref_location_product"
-                + " SET "
-                + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
-                + " WHERE `product_uid` = " + DbHelper.SetDBValue(model.UId, true)
-                + " AND `location_uid` = " + DbHelper.SetDBValue(locationId, true);
-            try
-            {
-                if (Conn.IsConnect())
-                {
-                    Cmd = new MySqlCommand(query, this.Conn.Connection);
-                    res = Cmd.ExecuteNonQuery();
-                }
-                this.Conn.Close();
-            }
-            catch (Exception e)
-            {
-                throw DbUpdateException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }
-
-            return CheckInsertionHelper(res);
-        }
-
 
     }
 }

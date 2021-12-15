@@ -11,8 +11,8 @@ namespace POS_Api.Model
         public string Description { get; set; }
         public string SecondDescription { get; set; }
         public string ThirdDescription { get; set; }
-        public string Upc { get; set; }
-        public string ItemCode { get; set; }
+        public int Upc { get; set; }
+        public int ItemCode { get; set; }
         public double Cost { get; set; }
         public double Price { get; set; }
         public string AddedDateTime { get; set; }
@@ -28,7 +28,7 @@ namespace POS_Api.Model
 
         }
 
-        public ProductModel (string uid, string desc, string secDesc, string thirdDesc, string upc,
+        public ProductModel (string uid, string desc, string secDesc, string thirdDesc, int upc,
             double cost, double price, string addedDatetime, string updateDatetime, string addBy, string updateBy)
         {
             UId = uid;
@@ -45,7 +45,7 @@ namespace POS_Api.Model
         }
 
         //Use In Add Product
-        public ProductModel(string desc, string secDesc, string thirdDesc, string upc,
+        public ProductModel(string desc, string secDesc, string thirdDesc, int upc,
            double cost, double price)
         {
             Description = desc;
@@ -58,7 +58,7 @@ namespace POS_Api.Model
 
 
         //Use In Update Product
-        public ProductModel(string uid, string desc, string secDesc, string thirdDesc, string upc,
+        public ProductModel(string uid, string desc, string secDesc, string thirdDesc, int upc,
            double cost, double price)
         {
             UId = uid;

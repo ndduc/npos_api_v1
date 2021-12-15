@@ -10,6 +10,5 @@ namespace POS_Api.Core.Interface
     {
         public bool AddLocation(LocationModel model, string userId);
         public IEnumerable<LocationModel> GetLocationByUserId(string userId);
-        public bool VerifyUIdExist(string uid);
     }
 }

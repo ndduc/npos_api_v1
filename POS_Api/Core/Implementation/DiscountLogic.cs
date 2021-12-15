@@ -14,56 +14,57 @@ using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
-    public class TaxLogic : BaseHelper, ITaxLogic
+    public class DiscountLogic : BaseHelper, IDiscountLogic
     {
+
+        private readonly IDiscountRepos _discountRepos;
         private readonly ILocationRepos _locationRepos;
         private readonly IProductRepos _productRepos;
-        private readonly ITaxRepos _taxRepos;
         private readonly IUserRepos _userRepos;
-        public TaxLogic()
+        public DiscountLogic()
         {
-            _userRepos = new UserRepos();
+            _discountRepos = new DiscountRepos();
             _locationRepos = new LocationRepos();
             _productRepos = new ProductRepos();
-            _taxRepos = new TaxRepos();
+            _userRepos = new UserRepos();
         }
 
-        // Update Tax Rate and Desc
-        public bool UpdateTax(TaxModel model, string userId, string locationId)
+        // Update Discount Rate and Desc
+        public bool UpdateDiscount(DiscountModel model, string userId, string locationId)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
-            if(!isUserValid)
+            if (!isUserValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
             }
 
-            if(!isLocationValid)
+            if (!isLocationValid)
             {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
             }
 
             model.UpdatedBy = userId;
-            return _taxRepos.UpdateTaxExecution(model);
+            return _discountRepos.UpdateDiscountExecution(model);
         }
 
 
-        public bool AddTax(TaxModel model, string userId, string locationId)
+        public bool AddDiscount(DiscountModel model, string userId, string locationId)
         {
             string id = null;
             bool isUnqiue = false;
             while (!isUnqiue)
             {
                 id = Guid.NewGuid().ToString();
-                isUnqiue = _taxRepos.VerifyUIdUnique(id);
+                isUnqiue = _discountRepos.VerifyUIdUnique(id);
             }
             if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
                 model.LocationUId = locationId;
-                return _taxRepos.AddTaxExecution(model);
+                return _discountRepos.AddDiscountExecution(model);
             }
             else
             {
@@ -71,15 +72,28 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        public bool AddTaxProductRelation(string productId, string locationId, string taxId, string userId)
+        public List<DiscountModel> GetDiscountByLocationId(string userId, string locationId)
+        {
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            {
+                return _discountRepos.GetDiscountByLocationIdExecution(locationId);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
+            }
+        }
+
+
+        public bool AddDiscountProductRelation(string productId, string locationId, string discountId, string userId)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
-            bool isTaxValid = _taxRepos.VerifyUIdExist(taxId);
+            bool isTaxValid = _discountRepos.VerifyUIdExist(discountId);
             bool isProductValid = _productRepos.VerifyUIdExist(productId);
-            bool isTaxRelationExist = _taxRepos.VerifyTaxProductRelation(productId, locationId);
+            bool isTaxRelationExist = _discountRepos.VerifyDiscountProductRelation(productId, locationId);
             bool isProductLocationExist = _productRepos.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
-            
+
             if (!isUserValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
@@ -97,12 +111,12 @@ namespace POS_Api.Core.Implementation
 
             if (!isTaxValid)
             {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Tax"));
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Discount"));
             }
 
             if (isTaxRelationExist)
             {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "This Tax Relation Already Existed"));
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "This Discount Relation Already Existed"));
             }
 
             if (!isProductLocationExist)
@@ -110,21 +124,9 @@ namespace POS_Api.Core.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Product Is Not Exist In This Location"));
             }
 
-            return _taxRepos.AddTaxProductRelationExecution(productId, locationId, taxId, userId);
+            return _discountRepos.AddDiscountProductRelationExecution(productId, locationId, discountId, userId);
         }
 
-
-        public List<TaxModel> GetTaxByLocationId(string userId, string locationId)
-        {
-            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
-            {
-                return _taxRepos.GetTaxByLocationIdExecution(locationId);
-            }
-            else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
-            }
-        }
 
     }
 }
