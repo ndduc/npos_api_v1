@@ -10,7 +10,7 @@ namespace POS_Api.Shared.Security
     public static class HashingPassword
     {
 
-        //This security key should be very complex and Random for encrypting the text. This playing vital role in encrypting the text.
+        // Need To Move This to env file
         public const string SecurityKey = "devSecurityKey69696969";
 
         //This method is used to convert the plain text to Encrypted/Un-Readable Text format.

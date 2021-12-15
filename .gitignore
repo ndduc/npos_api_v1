@@ -339,6 +339,18 @@ ASALocalRun/
 **/ConsoleApp/bin
 **/ConsoleApp/obj
 
-#ASP
-**/POS_Api/bin
-**/POS_Api/obj
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+*.dtbcache
+*.v2
+*.suo
+./.vs
+.*
+!/.gitignore
