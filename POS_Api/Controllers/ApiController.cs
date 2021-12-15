@@ -22,9 +22,7 @@ namespace POS_Api.Controllers
     {
         private readonly IUserLogic _UserLogic, _UserLogicParent;
         private readonly ILocationLogic _LocationLogic;
-        private readonly ILocationUserRelationLogic _LocationUserReLogic;
         private readonly IProductLogic _ProductLogic;
-        private readonly ILocationProductRelationLogic _LocationProductRelation;
         private readonly ICategoryLogic _categoryLogic;
         private readonly IDepartmentLogic _departmentLogic;
         private readonly IDiscountLogic _discountLogic;
@@ -40,14 +38,12 @@ namespace POS_Api.Controllers
             _UserLogic = new UserLogic();
             _LocationLogic = new LocationLogic();
             _ProductLogic = new ProductLogic();
-            _LocationUserReLogic = new LocationUserRelationLogic();
-            _UserLogicParent = new UserLogic(_LocationUserReLogic);
-            _LocationProductRelation = new LocationProductRelationLogic();
+            _UserLogicParent = new UserLogic();
             _categoryLogic = new CategoryLogic();
             _departmentLogic = new DepartmentLogic();
-            _discountLogic = new DiscountLogic(_LocationProductRelation);
+            _discountLogic = new DiscountLogic();
             _sectionLogic = new SectionLogic();
-            _taxLogic = new TaxLogic(_LocationProductRelation);
+            _taxLogic = new TaxLogic();
             _vendorLogic = new VendorLogic();
         }
 
@@ -291,10 +287,10 @@ namespace POS_Api.Controllers
 
                 if(muserid == null || muserid.Length < 5)
                 {
-                    isSuccess = _LocationUserReLogic.AddRelationLocationUser(null, userid, locaid, type.ToString().ToUpper());
+                    isSuccess = _UserLogic.AddRelationLocationUser(null, userid, locaid, type.ToString().ToUpper());
                 } else
                 {
-                    isSuccess = _LocationUserReLogic.AddRelationLocationUser(muserid, userid, locaid, type.ToString().ToUpper());
+                    isSuccess = _UserLogic.AddRelationLocationUser(muserid, userid, locaid, type.ToString().ToUpper());
                 }
                 if (isSuccess)
                 {
@@ -409,7 +405,29 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("code", out var ItemCode);
                 Request.Form.TryGetValue("cost", out var Cost);
                 Request.Form.TryGetValue("price", out var Price);
- 
+
+                // Extended Data
+                Request.Form.TryGetValue("departmentList", out var DepartmentList);
+                Request.Form.TryGetValue("categoryList", out var CategoryList);
+                Request.Form.TryGetValue("vendorList", out var VendorList);
+                Request.Form.TryGetValue("sectionList", out var SectionList);
+                Request.Form.TryGetValue("discount", out var discount);
+                Request.Form.TryGetValue("tax", out var tax);
+                Request.Form.TryGetValue("itemCodeList", out var ItemCodeList);
+                Request.Form.TryGetValue("upcList", out var UpcList);
+
+                Dictionary<string, string> param = new Dictionary<string, string>() {
+                    {"userid", userid},
+                    {"locid", locid},
+                    {"departmentList", DepartmentList},
+                    {"categoryList", CategoryList},
+                    {"vendorList", VendorList},
+                    {"sectionList", SectionList},
+                    {"discount", discount},
+                    {"tax", tax},
+                    {"itemCodeList", ItemCodeList},
+                    {"upcList", UpcList},
+                };
 
                 if (userid == null || userid.Length < 36 || locid == null || locid.Length < 36)
                 {
@@ -418,8 +436,11 @@ namespace POS_Api.Controllers
                 }
                 else
                 {
-                    ProductModel model = new ProductModel(Desc, Desc2, Desc3, Upc, double.Parse(Cost), double.Parse(Price));
-                    isSucess = _ProductLogic.AddProduct(model, userid, locid);
+
+                    ProductModel model = new ProductModel(Desc, Desc2, Desc3, 0, 0, double.Parse(Price));
+                    body = JsonSerializer.Serialize(_ProductLogic.AddProduct(model, param));
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                    /*isSucess = _ProductLogic.AddProduct(model, userid, locid);
                     if(isSucess)
                     {
                         body = "OK";
@@ -428,7 +449,7 @@ namespace POS_Api.Controllers
                     {
                         body = "INTERNAL ERROR FAILED TO INSERT";
                         return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
-                    }
+                    }*/
                 }
             }
             catch (Exception e)
@@ -462,7 +483,7 @@ namespace POS_Api.Controllers
                 }
                 else
                 {
-                    ProductModel model = new ProductModel(Uid, Desc, Desc2, Desc3, Upc, double.Parse(Cost), double.Parse(Price));
+                    ProductModel model = new ProductModel(Uid, Desc, Desc2, Desc3, int.Parse(Upc), double.Parse(Cost), double.Parse(Price));
                     var res = _ProductLogic.UpdateProduct(model, userid, locid);
                     return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
                 }
@@ -507,7 +528,7 @@ namespace POS_Api.Controllers
             Request.Form.TryGetValue("itemcode", out var ItemCode);
             try
             {
-                isSucess = _LocationProductRelation.AddRelationItemCode(locid, productId, userid, ItemCode);
+                isSucess = _ProductLogic.AddRelationItemCode(locid, productId, userid, ItemCode);
                 if(isSucess)
                 {
                     body = JsonSerializer.Serialize(isSucess);
@@ -556,6 +577,71 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/product/get-count")]
+        public dynamic GetProductCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/product/get-product-paginate")]
+        public dynamic GetProductForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         #endregion
 
         #region CATEGORY

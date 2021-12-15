@@ -19,15 +19,11 @@ namespace POS_Api.Core.Implementation
     public class UserLogic : BaseHelper, IUserLogic
     {
 
-        private readonly ILocationUserRelationLogic _locationRelationLogic;
         private readonly IUserRepos _userRepos;
-        public UserLogic(ILocationUserRelationLogic locationRelationLogic)
+        public UserLogic()
         {
-            _locationRelationLogic = locationRelationLogic;
             _userRepos = new UserRepos();
         }
-        public UserLogic() { }
-
         public bool AddUser(UserModel userModel)
         {
             string id = null;
@@ -81,7 +77,7 @@ namespace POS_Api.Core.Implementation
                 isSucess = _userRepos.AddUserExecution(userModel);
                 if(isSucess)
                 {
-                    return _locationRelationLogic.AddRelationLocationUser(parentId, id, locationId, type);
+                    return _userRepos.AddRelationLocationUser(parentId, id, locationId, type);
                 } else
                 {
                     return isSucess;
@@ -112,6 +108,9 @@ namespace POS_Api.Core.Implementation
             return _userRepos.UpdatePasswordExecution(userModel);
         }
 
-        
+        public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason)
+        {
+            return _userRepos.AddRelationLocationUser(muserId, userId, locationId, reason);
+        }
     }
 }

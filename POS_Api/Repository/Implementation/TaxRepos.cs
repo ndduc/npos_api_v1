@@ -218,6 +218,24 @@ namespace POS_Api.Repository.Implementation
             return CheckInsertionHelper(res);
         }
 
+        public bool AddTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in itemIdlist)
+            {
+                exectutedList.Add(AddTaxProductRelationExecution(productId, locationId, item, userId));
+            }
+
+            if (exectutedList.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
 
         public bool UpdateTaxExecution(TaxModel model)
         {

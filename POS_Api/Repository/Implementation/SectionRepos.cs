@@ -256,6 +256,23 @@ namespace POS_Api.Repository.Implementation
             return CheckUpdateHelper(res);
         }
 
+        public bool AddSectionExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in itemIdlist)
+            {
+                exectutedList.Add(AddSectionProductRelationExecution(item, productId, locationId, userId));
+            }
+
+            if (exectutedList.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 
     }
 }

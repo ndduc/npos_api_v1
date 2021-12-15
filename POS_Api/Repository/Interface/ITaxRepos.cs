@@ -22,5 +22,7 @@ namespace POS_Api.Repository.Interface
         public bool VerifyTaxProductRelation(string productId, string locationId);
         public bool AddTaxProductRelationExecution(string productId, string locationId, string taxId, string userId);
         public bool UpdateTaxExecution(TaxModel model);
+
+        public bool AddTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
     }
 }

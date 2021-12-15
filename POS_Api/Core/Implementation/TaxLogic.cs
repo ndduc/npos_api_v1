@@ -16,15 +16,13 @@ namespace POS_Api.Core.Implementation
 {
     public class TaxLogic : BaseHelper, ITaxLogic
     {
-        private readonly ILocationProductRelationLogic _productLocationRelationLogic;
         private readonly ILocationRepos _locationRepos;
         private readonly IProductRepos _productRepos;
         private readonly ITaxRepos _taxRepos;
         private readonly IUserRepos _userRepos;
-        public TaxLogic(ILocationProductRelationLogic productLocationRelationLogic)
+        public TaxLogic()
         {
             _userRepos = new UserRepos();
-            _productLocationRelationLogic = productLocationRelationLogic;
             _locationRepos = new LocationRepos();
             _productRepos = new ProductRepos();
             _taxRepos = new TaxRepos();
@@ -80,7 +78,7 @@ namespace POS_Api.Core.Implementation
             bool isTaxValid = _taxRepos.VerifyUIdExist(taxId);
             bool isProductValid = _productRepos.VerifyUIdExist(productId);
             bool isTaxRelationExist = _taxRepos.VerifyTaxProductRelation(productId, locationId);
-            bool isProductLocationExist = _productLocationRelationLogic.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
+            bool isProductLocationExist = _productRepos.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
             
             if (!isUserValid)
             {

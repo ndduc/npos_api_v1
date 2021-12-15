@@ -11,8 +11,8 @@ namespace POS_Api.Model.ViewModel
         public string Description { get; set; }
         public string SecondDescription { get; set; }
         public string ThirdDescription { get; set; }
-        public string Upc { get; set; }
-        public string ItemCode { get; set; }
+        public int Upc { get; set; }
+        public int ItemCode { get; set; }
         public double Cost { get; set; }
         public double Price { get; set; }
         public string AddedDateTime { get; set; }

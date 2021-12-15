@@ -98,6 +98,26 @@ namespace POS_Api.Shared.ExceptionHelper
                 return false;
             }
         }
+
+        public List<string> GetListFromString(string item)
+        {
+            if (item != null)
+            {
+                if (item.Contains(","))
+                {
+                    return item.Split(',').ToList();
+                } else
+                {
+                    List<string> lst = new List<string>();
+                    lst.Add(item);
+                    return lst;
+                }
+            }
+            else
+            {
+                return new List<string>();
+            }
+        }
     }
 }
 

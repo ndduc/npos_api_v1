@@ -74,6 +74,83 @@ namespace POS_Api.Repository.Implementation
 
         }
 
+        public int GetProductPaginateCount(string locId)
+        {
+            this.Conn = new DBConnection();
+            string query = "SELECT count(*) as count FROM asset_product AS AL"
+              + " INNER JOIN ref_location_product AS RLP"
+              + " ON AL.uid = RLP.product_uid"
+              + " AND RLP.location_uid = "
+              + DbHelper.SetDBValue(locId, true)
+              + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC;";
+            int count = 0;
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    count = int.Parse(DbHelper.TryGet(Reader, "count"));
+                }
+                this.Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+
+            return count;
+        }
+
+        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx)
+        {
+            List<ProductModel> productList = new List<ProductModel>();
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_product AS AL"
+                        + " INNER JOIN ref_location_product AS RLP"
+                        + " ON AL.uid = RLP.product_uid"
+                        + " AND RLP.location_uid = "
+                        + DbHelper.SetDBValue(locId, true)
+                        + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+                        + " LIMIT " + startIdx + ", " + endIdx + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    ProductModel model = new ProductModel(
+                        DbHelper.TryGet(Reader, "uid"),
+                        DbHelper.TryGet(Reader, "description"),
+                        DbHelper.TryGet(Reader, "second_description"),
+                        DbHelper.TryGet(Reader, "third_description"),
+                        DbHelper.TryGet(Reader, "upc"),
+                        double.Parse(DbHelper.TryGet(Reader, "cost")),
+                        double.Parse(DbHelper.TryGet(Reader, "price")),
+                        DbHelper.TryGet(Reader, "added_datetime"),
+                        DbHelper.TryGet(Reader, "updated_datetime"),
+                        DbHelper.TryGet(Reader, "added_by"),
+                        DbHelper.TryGet(Reader, "updated_by")
+                    );
+                    productList.Add(model);
+                }
+                this.Conn.Close();
+                if (productList.Count > 0)
+                {
+                    return productList;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
+
         public ProductModel GetProductByIdExecution(string locationId, string where)
         {
             ProductModel model = null;
@@ -98,7 +175,6 @@ namespace POS_Api.Repository.Implementation
                             Description = DbHelper.TryGet(Reader, "description"),
                             SecondDescription = DbHelper.TryGet(Reader, "second_description"),
                             ThirdDescription = DbHelper.TryGet(Reader, "third_description"),
-                            ItemCode = DbHelper.TryGet(Reader, "rel_item_code"),
                             Cost = double.Parse(DbHelper.TryGet(Reader, "cost")),
                             Price = double.Parse(DbHelper.TryGet(Reader, "price")),
                             AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
@@ -391,6 +467,7 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
+        #region INVOLVED CODE FROM OTHER REPOS -- MUST MOVE IN FUTURE
         private List<CategoryModel> GetProductCategoryList(string productId, string locationId)
         {
             List<CategoryModel> lst = new List<CategoryModel>();
@@ -656,6 +733,298 @@ namespace POS_Api.Repository.Implementation
 
             return lst;
         }
+        #endregion
 
+        #region PRODUCT LOCATION RELATION
+        public bool IsRelationLocationProductExist(string locationId, string productId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = "SELECT id FROM ref_location_product"
+                            + " WHERE PRODUCT_UID = " + DbHelper.SetDBValue(productId, true) + " AND"
+                            + " LOCATION_UID = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        id = DbHelper.TryGet(Reader, "id");
+                    }
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return CheckExistingHelper(id);
+        }
+
+        public bool AddRelationLocationProduct(string locationId, string productId, string userId)
+        {
+            int res = 0;
+            Conn = new DBConnection();
+            string query = "INSERT INTO REF_LOCATION_PRODUCT (`product_uid`, `location_uid`, `added_by`) VALUES ( "
+                + DbHelper.SetDBValue(productId, false)
+                + DbHelper.SetDBValue(locationId, false)
+                + DbHelper.SetDBValue(userId, true)
+                + " );";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    res = Cmd.ExecuteNonQuery();
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+
+            return CheckInsertionHelper(res);
+        }
+
+        public bool IsRelationItemCodeExist(string locationId, string productId, string itemCode)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = "SELECT id FROM ref_location_product_itemcode"
+                            + " WHERE "
+                            + " LOCATION_UID = " + DbHelper.SetDBValue(locationId, true) + " AND "
+                            + " ITEM_CODE = " + DbHelper.SetDBValue(itemCode, true) + " ; ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        id = DbHelper.TryGet(Reader, "id");
+                    }
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return CheckExistingHelper(id);
+        }
+
+        public bool AddRelationItemCode(string locationId, string productId, string userId, string itemCode)
+        {
+            bool isRelationExistItemCode = IsRelationItemCodeExist(locationId, productId, itemCode);
+            bool isRelationLocationExist = IsRelationLocationProductExist(locationId, productId);
+            int res;
+            if (!isRelationExistItemCode && isRelationLocationExist)
+            {
+
+                Conn = new DBConnection();
+                string query = "INSERT INTO ref_location_product_itemcode (`product_uid`, `location_uid`, `item_code`, `added_by`) VALUES ( "
+                    + DbHelper.SetDBValue(productId, false)
+                    + DbHelper.SetDBValue(locationId, false)
+                    + DbHelper.SetDBValue(itemCode, false)
+                    + DbHelper.SetDBValue(userId, true)
+                    + " );";
+                try
+                {
+                    if (Conn.IsConnect())
+                    {
+                        Cmd = new MySqlCommand(query, this.Conn.Connection);
+                        res = Cmd.ExecuteNonQuery();
+                        Conn.Close();
+                    }
+                    else
+                    {
+                        throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+                }
+
+
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Itemcode Already Existed"));
+            }
+
+            return CheckInsertionHelper(res);
+
+        }
+
+        public bool AddRelationUpc(string locationId, string productId, string userId, string upc)
+        {
+            bool isRelationExistItemCode = IsRelationItemCodeExist(locationId, productId, upc);
+            bool isRelationLocationExist = IsRelationLocationProductExist(locationId, productId);
+            int res;
+            if (!isRelationExistItemCode && isRelationLocationExist)
+            {
+
+                Conn = new DBConnection();
+                string query = "INSERT INTO ref_location_product_upc (`product_uid`, `location_uid`, `upc`, `added_by`) VALUES ( "
+                    + DbHelper.SetDBValue(productId, false)
+                    + DbHelper.SetDBValue(locationId, false)
+                    + DbHelper.SetDBValue(upc, false)
+                    + DbHelper.SetDBValue(userId, true)
+                    + " );";
+                try
+                {
+                    if (Conn.IsConnect())
+                    {
+                        Cmd = new MySqlCommand(query, this.Conn.Connection);
+                        res = Cmd.ExecuteNonQuery();
+                        Conn.Close();
+                    }
+                    else
+                    {
+                        throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+                }
+
+
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Itemcode Already Existed"));
+            }
+
+            return CheckInsertionHelper(res);
+
+        }
+
+
+        public bool UpdateRelationItemCode(string locationId, string productId, string userId, string newItemCode, string oldItemCode)
+        {
+            bool isRelationExistOldItemCode = IsRelationItemCodeExist(locationId, productId, oldItemCode);
+            bool isRelationExistNewItemCode = IsRelationItemCodeExist(locationId, productId, newItemCode);
+            bool isRelationLocationExist = IsRelationLocationProductExist(locationId, productId);
+            int res;
+            if (isRelationExistOldItemCode && isRelationLocationExist && !isRelationExistNewItemCode)
+            {
+                Conn = new DBConnection();
+                string query = "UPDATE ref_location_product_itemcode SET "
+                    + " `item_code` = " + DbHelper.SetDBValue(newItemCode, true)
+                    + " `updated_by` = " + DbHelper.SetDBValue(userId, true)
+                    + " WHERE "
+                    + " `location_uid` = " + DbHelper.SetDBValue(locationId, true)
+                    + " AND `product_uid` = " + DbHelper.SetDBValue(productId, true)
+                    + " AND `item_code` = " + DbHelper.SetDBValue(oldItemCode, true) + "; ";
+                try
+                {
+                    if (Conn.IsConnect())
+                    {
+                        Cmd = new MySqlCommand(query, this.Conn.Connection);
+                        res = Cmd.ExecuteNonQuery();
+                        Conn.Close();
+                    }
+                    else
+                    {
+                        throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+                }
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Itemcode Already Existed"));
+            }
+
+            return CheckUpdateHelper(res);
+        }
+
+        /*Going to need audit, to record whoever delete the iem*/
+        public bool DeleteRelationItemCode(string locationId, string productId, string itemCode)
+        {
+            bool isRelationExistItemCode = IsRelationItemCodeExist(locationId, productId, itemCode);
+            bool isRelationLocationExist = IsRelationLocationProductExist(locationId, productId);
+            int res;
+            if (isRelationExistItemCode && isRelationLocationExist)
+            {
+                Conn = new DBConnection();
+                string query = "DELTE FROM ref_location_product_itemcode "
+                    + " WHERE "
+                    + " `location_uid` = " + DbHelper.SetDBValue(locationId, true)
+                    + " AND `product_uid` = " + DbHelper.SetDBValue(productId, true)
+                    + " AND `item_code` = " + DbHelper.SetDBValue(itemCode, true) + "; ";
+                try
+                {
+                    if (Conn.IsConnect())
+                    {
+                        Cmd = new MySqlCommand(query, this.Conn.Connection);
+                        res = Cmd.ExecuteNonQuery();
+                        Conn.Close();
+                    }
+                    else
+                    {
+                        throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+                }
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Itemcode Already Existed"));
+            }
+
+            return CheckUpdateHelper(res);
+
+        }
+
+        public bool IsProductLocationExist(string locationId, string productId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_location_product WHERE "
+                            + " `product_uid` = " + DbHelper.SetDBValue(productId, true) + " AND "
+                            + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            Debug.WriteLine(query);
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "id");
+                }
+                Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return CheckExistingHelper(id);
+        }
+        #endregion
     }
 }
