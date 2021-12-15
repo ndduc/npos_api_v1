@@ -34,5 +34,10 @@ namespace POS_Api.Repository.Interface
         public bool UpdateRelationItemCode(string locationId, string productId, string userId, string newItemCode, string oldItemCode);
 
         public bool IsProductLocationExist(string locationId, string productId);
+
+        public bool AddRelationUpc(string locationId, string productId, string userId, string upc);
+
+        public int GetProductPaginateCount(string locId);
+        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx);
     }
 }

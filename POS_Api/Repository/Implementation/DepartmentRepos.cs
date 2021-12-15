@@ -135,6 +135,23 @@ namespace POS_Api.Repository.Implementation
             return CheckInsertionHelper(res);
         }
 
+        public bool AddDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in deptIdlist)
+            {
+                exectutedList.Add(AddDepartmentProductRelationExecution(item, productId, locationId, userId));
+            }
+
+            if(exectutedList.Contains(false))
+            {
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
+
         public bool AddDepartmentProductRelationExecution(string uid, string productId, string locationId, string userId)
         {
             int res = 0;

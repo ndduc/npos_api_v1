@@ -22,5 +22,7 @@ namespace POS_Api.Repository.Interface
         public bool AddVendorExecution(VendorModel model);
         public List<VendorModel> GetVendorByLocationIdExecution(string locationId);
         public bool UpdateVendorExecution(VendorModel model);
+
+        public bool AddVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
     }
 }
