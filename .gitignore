@@ -54,3 +54,6 @@ dkms.conf
 *.dtbcache
 *.v2
 *.suo
+./.vs
+.*
+!/.gitignore
