@@ -13,5 +13,12 @@ namespace POS_Api.Core.Interface
         public List<DepartmentModel> GetDepartmentByLocationId(string userId, string locationId);
 
         public bool UpdateDepartment(DepartmentModel model, string userId, string locationId);
+
+        public int GetDepartmentPaginateCount(Dictionary<string, string> param);
+        public IEnumerable<DepartmentModel> GetDepartmentPaginate(Dictionary<string, string> param);
+
+        public DepartmentModel GetDepartmentById(string userId,string locId, string departmentId);
+
+        public IEnumerable<DepartmentModel> GetDepartmentByDescription(string userId, string locId, string description);
     }
 }

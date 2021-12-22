@@ -15,6 +15,8 @@ namespace POS_Api.Model
         public string UpdatedBy { get; set; }
         public string LocationUId { get; set; }
 
+        public string SecondDescription { get; set; }
+
         public bool IsError { get; set; }
         public string Error { get; set; }
     }
