@@ -753,6 +753,103 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/category/get-count")]
+        public dynamic GetCategoryCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_categoryLogic.GetCategoryPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/category/get-category-paginate")]
+        public dynamic GetCategoryForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_categoryLogic.GetCategoryPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/category/{categoryId?}")]
+        public dynamic GetCategoryById(string userid, string locid, string categoryId)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_categoryLogic.GetCategoryById(userid, locid, categoryId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/category/get-by-description")]
+        public dynamic GetCategoryByDescription(string userid, string locid)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_categoryLogic.GetCategoryByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         #endregion
 
@@ -1074,6 +1171,103 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-count")]
+        public dynamic GetDiscountCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_discountLogic.GetDiscountPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-discount-paginate")]
+        public dynamic GetDiscountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_discountLogic.GetDiscountPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/discount/{discountId?}")]
+        public dynamic GetDiscountById(string userid, string locid, string discountId)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_discountLogic.GetDiscountById(userid, locid, discountId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-by-description")]
+        public dynamic GetDiscountByDescription(string userid, string locid)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_discountLogic.GetDiscountByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         #endregion
 
         #region SECTION
@@ -1180,8 +1374,106 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
-        #endregion
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/section/get-count")]
+        public dynamic GetSectionCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_sectionLogic.GetSectionPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/section/get-section-paginate")]
+        public dynamic GetSectionForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_sectionLogic.GetSectionPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/section/{sectionId?}")]
+        public dynamic GetSectionById(string userid, string locid, string sectionId)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_sectionLogic.GetSectionById(userid, locid, sectionId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/section/get-by-section")]
+        public dynamic GetSectionByDescription(string userid, string locid)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_sectionLogic.GetSectionByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        #endregion
+       
         #region TAX
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/add")]
         public dynamic AddTax(string userid, string locid)
@@ -1290,6 +1582,102 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-count")]
+        public dynamic GetTaxCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_taxLogic.GetTaxPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-tax-paginate")]
+        public dynamic GetTaxForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_taxLogic.GetTaxPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/tax/{taxId?}")]
+        public dynamic GetTaxById(string userid, string locid, string taxId)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_taxLogic.GetTaxById(userid, locid, taxId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-by-tax")]
+        public dynamic GetTaxByDescription(string userid, string locid)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_taxLogic.GetTaxByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
         #endregion
 
         #region VENDOR
@@ -1390,6 +1778,103 @@ namespace POS_Api.Controllers
             {
                 var res = _vendorLogic.GetVendorByLocationId(userid, locid);
                 return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-count")]
+        public dynamic GetVendorCountForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_vendorLogic.GetVendorPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-vendor-paginate")]
+        public dynamic GetVendorForPaginate(string userid, string locid)
+        {
+            dynamic body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_vendorLogic.GetVendorPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/vendor/{vendorId?}")]
+        public dynamic GetVendorById(string userid, string locid, string vendorId)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_vendorLogic.GetVendorById(userid, locid, vendorId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-by-vendor")]
+        public dynamic GetVendorByDescription(string userid, string locid)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_vendorLogic.GetVendorByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
             }
             catch (Exception e)
             {
