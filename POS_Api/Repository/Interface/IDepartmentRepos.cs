@@ -17,5 +17,13 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUIdExist(string uid);
 
         public bool AddDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId);
+
+
+        public int GetDepartmentPaginateCount(string locId);
+        public IEnumerable<DepartmentModel> GetDepartmentPaginateByDefault(string locId, int startIdx, int endIdx);
+
+        public DepartmentModel GetDepartmentById(string locId, string departmentId);
+
+        public IEnumerable<DepartmentModel> GetDepartmentByDescription(string locId, string description);
     }
 }

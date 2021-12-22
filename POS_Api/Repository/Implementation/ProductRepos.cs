@@ -112,26 +112,28 @@ namespace POS_Api.Repository.Implementation
                         + " AND RLP.location_uid = "
                         + DbHelper.SetDBValue(locId, true)
                         + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
-                        + " LIMIT " + startIdx + ", " + endIdx + "; ";
+                        + "; ";
             if (Conn.IsConnect())
             {
                 Cmd = new MySqlCommand(query, this.Conn.Connection);
                 Reader = Cmd.ExecuteReader();
                 while (Reader.Read())
                 {
-                    ProductModel model = new ProductModel(
-                        DbHelper.TryGet(Reader, "uid"),
-                        DbHelper.TryGet(Reader, "description"),
-                        DbHelper.TryGet(Reader, "second_description"),
-                        DbHelper.TryGet(Reader, "third_description"),
-                        DbHelper.TryGet(Reader, "upc"),
-                        double.Parse(DbHelper.TryGet(Reader, "cost")),
-                        double.Parse(DbHelper.TryGet(Reader, "price")),
-                        DbHelper.TryGet(Reader, "added_datetime"),
-                        DbHelper.TryGet(Reader, "updated_datetime"),
-                        DbHelper.TryGet(Reader, "added_by"),
-                        DbHelper.TryGet(Reader, "updated_by")
-                    );
+                    ProductModel model = new ProductModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        ThirdDescription = DbHelper.TryGet(Reader, "third_description"),
+                        Upc = int.Parse(DbHelper.TryGet(Reader, "upc")),
+                        ItemCode = int.Parse(DbHelper.TryGet(Reader, "item_code")),
+                        Cost = double.Parse(DbHelper.TryGet(Reader, "cost")),
+                        Price = double.Parse(DbHelper.TryGet(Reader, "price")),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
                     productList.Add(model);
                 }
                 this.Conn.Close();
@@ -183,18 +185,19 @@ namespace POS_Api.Repository.Implementation
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
                         };
                     }
-                    Conn.Close();
                 }
                 else
                 {
+                    Conn.Close();
                     throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
                 }
             }
             catch (Exception e)
             {
+                Conn.Close();
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
             }
-
+            Conn.Close();
             if (model != null)
             {
                 List<string> itemCodeList = GetProductItemCode(locationId, model.UId);

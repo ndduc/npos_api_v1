@@ -115,9 +115,9 @@ namespace POS_Api.Repository.Implementation
             }
             else
             {
+                this.Conn.Close();
                 throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
             }
-
             return CheckExistingHelper(id);
         }
 

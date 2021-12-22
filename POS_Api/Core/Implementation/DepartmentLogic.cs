@@ -43,6 +43,7 @@ namespace POS_Api.Core.Implementation
             }
 
             model.UpdatedBy = userId;
+            model.LocationUId = locationId;
             return _departmentRepos.UpdateDepartmentExecution(model);
         }
 
@@ -99,6 +100,72 @@ namespace POS_Api.Core.Implementation
             }
         }
 
+        public int GetDepartmentPaginateCount(Dictionary<string, string> param)
+        {
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("searchType", out string searchType);
+            try
+            {
+                return _departmentRepos.GetDepartmentPaginateCount(locationId);
+                // Search Type indicate search by default (locId) or itemId, etc ...
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public IEnumerable<DepartmentModel> GetDepartmentPaginate(Dictionary<string, string> param)
+        {
+
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("itemCode", out string itemCode);
+            param.TryGetValue("startIdx", out string startIdx);
+            param.TryGetValue("endIdx", out string endIdx);
+
+            try
+            {
+                if (locationId != null)
+                {
+                    return _departmentRepos.GetDepartmentPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                }
+                else if (itemCode != null)
+                {
+                    // add repos call the get product by item here
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public DepartmentModel GetDepartmentById(string userId, string locId, string departmentId) {
+            if (_userRepos.VerifyUser(userId)) {
+                return _departmentRepos.GetDepartmentById(locId, departmentId);
+            } else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+            
+        }
+
+        public IEnumerable<DepartmentModel> GetDepartmentByDescription(string userId, string locId, string description)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _departmentRepos.GetDepartmentByDescription(locId, description);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+        }
 
     }
 }
