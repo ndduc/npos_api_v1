@@ -14,5 +14,13 @@ namespace POS_Api.Repository.Interface
         public bool UpdateVendorExecution(VendorModel model);
 
         public bool AddVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
+        public int GetVendorPaginateCount(string locId);
+
+        public IEnumerable<VendorModel> GetVendorPaginateByDefault(string locId, int startIdx, int endIdx);
+
+        public VendorModel GetVendorById(string locId, string VendorId);
+
+        public IEnumerable<VendorModel> GetVendorByDescription(string locId, string description);
     }
 }

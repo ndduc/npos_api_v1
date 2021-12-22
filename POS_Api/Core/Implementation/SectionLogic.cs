@@ -95,6 +95,76 @@ namespace POS_Api.Core.Implementation
             }
         }
 
+        public int GetSectionPaginateCount(Dictionary<string, string> param)
+        {
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("searchType", out string searchType);
+            try
+            {
+                return _sectionRepos.GetSectionPaginateCount(locationId);
+                // Search Type indicate search by default (locId) or itemId, etc ...
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public IEnumerable<SectionModel> GetSectionPaginate(Dictionary<string, string> param)
+        {
+
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("itemCode", out string itemCode);
+            param.TryGetValue("startIdx", out string startIdx);
+            param.TryGetValue("endIdx", out string endIdx);
+
+            try
+            {
+                if (locationId != null)
+                {
+                    return _sectionRepos.GetSectionPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                }
+                else if (itemCode != null)
+                {
+                    // add repos call the get product by item here
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public SectionModel GetSectionById(string userId, string locId, string SectionId)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _sectionRepos.GetSectionById(locId, SectionId);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+
+        }
+
+        public IEnumerable<SectionModel> GetSectionByDescription(string userId, string locId, string description)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _sectionRepos.GetSectionByDescription(locId, description);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+        }
+
 
     }
 }

@@ -14,5 +14,13 @@ namespace POS_Api.Repository.Interface
         public bool UpdateSectionExecution(SectionModel model);
 
         public bool AddSectionExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
+        public int GetSectionPaginateCount(string locId);
+
+        public IEnumerable<SectionModel> GetSectionPaginateByDefault(string locId, int startIdx, int endIdx);
+
+        public SectionModel GetSectionById(string locId, string SectionId);
+
+        public IEnumerable<SectionModel> GetSectionByDescription(string locId, string description);
     }
 }

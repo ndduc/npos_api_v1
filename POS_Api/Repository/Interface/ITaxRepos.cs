@@ -14,5 +14,13 @@ namespace POS_Api.Repository.Interface
         public bool UpdateTaxExecution(TaxModel model);
 
         public bool AddTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
+        public int GetTaxPaginateCount(string locId);
+
+        public IEnumerable<TaxModel> GetTaxPaginateByDefault(string locId, int startIdx, int endIdx);
+
+        public TaxModel GetTaxById(string locId, string TaxId);
+
+        public IEnumerable<TaxModel> GetTaxByDescription(string locId, string description);
     }
 }

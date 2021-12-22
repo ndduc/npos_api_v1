@@ -11,5 +11,12 @@ namespace POS_Api.Core.Interface
         public List<CategoryModel> GetCategoryByLocationId(string userId, string locationId);
 
         public bool UpdateCategory(CategoryModel model, string userId, string locationId);
+
+        public int GetCategoryPaginateCount(Dictionary<string, string> param);
+        public IEnumerable<CategoryModel> GetCategoryPaginate(Dictionary<string, string> param);
+
+        public CategoryModel GetCategoryById(string userId, string locId, string CategoryId);
+
+        public IEnumerable<CategoryModel> GetCategoryByDescription(string userId, string locId, string description);
     }
 }

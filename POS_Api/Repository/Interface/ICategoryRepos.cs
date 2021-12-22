@@ -14,5 +14,13 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUIdExist(string uid);
 
         public bool AddCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
+        public int GetCategoryPaginateCount(string locId);
+        
+        public IEnumerable<CategoryModel> GetCategoryPaginateByDefault(string locId, int startIdx, int endIdx);
+
+        public CategoryModel GetCategoryById(string locId, string CategoryId);
+
+        public IEnumerable<CategoryModel> GetCategoryByDescription(string locId, string description);
     }
 }

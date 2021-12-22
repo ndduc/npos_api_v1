@@ -264,5 +264,163 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
+
+        public int GetDiscountPaginateCount(string locId)
+        {
+            this.Conn = new DBConnection();
+            string query = "SELECT count(*) as count FROM asset_discount AS AL"
+              + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true)
+              + " ;";
+            int count = 0;
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    count = int.Parse(DbHelper.TryGet(Reader, "count"));
+                }
+                this.Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+
+            return count;
+        }
+
+        public IEnumerable<DiscountModel> GetDiscountPaginateByDefault(string locId, int startIdx, int endIdx)
+        {
+            List<DiscountModel> itemList = new List<DiscountModel>();
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_discount AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true)
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    DiscountModel model = new DiscountModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        Rate = double.Parse(DbHelper.TryGet(Reader, "rate")),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    itemList.Add(model);
+                }
+                this.Conn.Close();
+                if (itemList.Count > 0)
+                {
+                    return itemList;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
+        public DiscountModel GetDiscountById(string locId, string DiscountId)
+        {
+            DiscountModel item = null;
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_discount AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
+             + " uid = " + DbHelper.SetDBValue(DiscountId, true)
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    DiscountModel model = new DiscountModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        Rate = double.Parse(DbHelper.TryGet(Reader, "rate")),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    item = model;
+                }
+                this.Conn.Close();
+                if (CheckExistingHelper(item))
+                {
+                    return item;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
+
+        public IEnumerable<DiscountModel> GetDiscountByDescription(string locId, string description)
+        {
+            List<DiscountModel> itemList = new List<DiscountModel>();
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_discount AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
+             + " description like '%" + description + "%' "
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    DiscountModel model = new DiscountModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        Rate = double.Parse(DbHelper.TryGet(Reader, "rate")),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    itemList.Add(model);
+                }
+                this.Conn.Close();
+                if (itemList.Count > 0)
+                {
+                    return itemList;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
     }
 }

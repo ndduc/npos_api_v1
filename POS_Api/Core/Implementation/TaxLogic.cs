@@ -121,5 +121,75 @@ namespace POS_Api.Core.Implementation
             }
         }
 
+        public int GetTaxPaginateCount(Dictionary<string, string> param)
+        {
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("searchType", out string searchType);
+            try
+            {
+                return _taxRepos.GetTaxPaginateCount(locationId);
+                // Search Type indicate search by default (locId) or itemId, etc ...
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public IEnumerable<TaxModel> GetTaxPaginate(Dictionary<string, string> param)
+        {
+
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("itemCode", out string itemCode);
+            param.TryGetValue("startIdx", out string startIdx);
+            param.TryGetValue("endIdx", out string endIdx);
+
+            try
+            {
+                if (locationId != null)
+                {
+                    return _taxRepos.GetTaxPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                }
+                else if (itemCode != null)
+                {
+                    // add repos call the get product by item here
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public TaxModel GetTaxById(string userId, string locId, string TaxId)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _taxRepos.GetTaxById(locId, TaxId);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+
+        }
+
+        public IEnumerable<TaxModel> GetTaxByDescription(string userId, string locId, string description)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _taxRepos.GetTaxByDescription(locId, description);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+        }
+
     }
 }

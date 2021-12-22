@@ -122,6 +122,74 @@ namespace POS_Api.Core.Implementation
             return _discountRepos.AddDiscountProductRelationExecution(productId, locationId, discountId, userId);
         }
 
+        public int GetDiscountPaginateCount(Dictionary<string, string> param)
+        {
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("searchType", out string searchType);
+            try
+            {
+                return _discountRepos.GetDiscountPaginateCount(locationId);
+                // Search Type indicate search by default (locId) or itemId, etc ...
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
 
+        public IEnumerable<DiscountModel> GetDiscountPaginate(Dictionary<string, string> param)
+        {
+
+            param.TryGetValue("locationId", out string locationId);
+            param.TryGetValue("itemCode", out string itemCode);
+            param.TryGetValue("startIdx", out string startIdx);
+            param.TryGetValue("endIdx", out string endIdx);
+
+            try
+            {
+                if (locationId != null)
+                {
+                    return _discountRepos.GetDiscountPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                }
+                else if (itemCode != null)
+                {
+                    // add repos call the get product by item here
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+        }
+
+        public DiscountModel GetDiscountById(string userId, string locId, string DiscountId)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _discountRepos.GetDiscountById(locId, DiscountId);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+
+        }
+
+        public IEnumerable<DiscountModel> GetDiscountByDescription(string userId, string locId, string description)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _discountRepos.GetDiscountByDescription(locId, description);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+        }
     }
 }

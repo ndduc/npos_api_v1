@@ -271,5 +271,158 @@ namespace POS_Api.Repository.Implementation
             }
             return CheckExistingHelper(id);
         }
+
+        public int GetCategoryPaginateCount(string locId)
+        {
+            this.Conn = new DBConnection();
+            string query = "SELECT count(*) as count FROM asset_category AS AL"
+              + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true)
+              + " ;";
+            int count = 0;
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    count = int.Parse(DbHelper.TryGet(Reader, "count"));
+                }
+                this.Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+
+            return count;
+        }
+
+        public IEnumerable<CategoryModel> GetCategoryPaginateByDefault(string locId, int startIdx, int endIdx)
+        {
+            List<CategoryModel> itemList = new List<CategoryModel>();
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_category AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true)
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    CategoryModel model = new CategoryModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    itemList.Add(model);
+                }
+                this.Conn.Close();
+                if (itemList.Count > 0)
+                {
+                    return itemList;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
+        public CategoryModel GetCategoryById(string locId, string CategoryId)
+        {
+            CategoryModel item = null;
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_category AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
+             + " uid = " + DbHelper.SetDBValue(CategoryId, true)
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    CategoryModel model = new CategoryModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    item = model;
+                }
+                this.Conn.Close();
+                if (CheckExistingHelper(item))
+                {
+                    return item;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
+        public IEnumerable<CategoryModel> GetCategoryByDescription(string locId, string description)
+        {
+            List<CategoryModel> itemList = new List<CategoryModel>();
+            this.Conn = new DBConnection();
+            string query = "SELECT AL.* FROM asset_category AS AL"
+             + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
+             + " description like '%" + description + "%' "
+             + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
+             + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    CategoryModel model = new CategoryModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Description = DbHelper.TryGet(Reader, "description"),
+                        SecondDescription = DbHelper.TryGet(Reader, "second_description"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                    };
+                    itemList.Add(model);
+                }
+                this.Conn.Close();
+                if (itemList.Count > 0)
+                {
+                    return itemList;
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                }
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
     }
 }

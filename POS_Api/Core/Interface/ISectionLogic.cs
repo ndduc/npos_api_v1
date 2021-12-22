@@ -10,5 +10,12 @@ namespace POS_Api.Core.Interface
         public List<SectionModel> GetSectionByLocationId(string userId, string locationId);
 
         public bool UpdateSection(SectionModel model, string userId, string locationId);
+
+        public int GetSectionPaginateCount(Dictionary<string, string> param);
+        public IEnumerable<SectionModel> GetSectionPaginate(Dictionary<string, string> param);
+
+        public SectionModel GetSectionById(string userId, string locId, string SectionId);
+
+        public IEnumerable<SectionModel> GetSectionByDescription(string userId, string locId, string description);
     }
 }
