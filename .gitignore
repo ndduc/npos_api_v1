@@ -358,3 +358,5 @@ dkms.conf
 
 **/POS_Api/bin
 **/POS_Api/obj
+
+**/.vs
