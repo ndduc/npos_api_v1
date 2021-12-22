@@ -1,18 +1,11 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
 using POS_Api.Model.EnumData;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
@@ -45,13 +38,15 @@ namespace POS_Api.Core.Implementation
             if (isInserted && isRelation)
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
         }
 
-        public IEnumerable<LocationModel> GetLocationByUserId(string userId) {
+        public IEnumerable<LocationModel> GetLocationByUserId(string userId)
+        {
             return _locationRepos.GetLocationByUserIdExecution(userId);
         }
     }

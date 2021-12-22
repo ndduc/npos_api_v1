@@ -1,5 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
 using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
 using POS_Api.Repository.Interface;
@@ -8,13 +7,11 @@ using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Repository.Implementation
 {
-    public class DepartmentRepos: BaseHelper, IDepartmentRepos
+    public class DepartmentRepos : BaseHelper, IDepartmentRepos
     {
         public bool UpdateDepartmentExecution(DepartmentModel model)
         {
@@ -148,10 +145,11 @@ namespace POS_Api.Repository.Implementation
                 exectutedList.Add(AddDepartmentProductRelationExecution(item, productId, locationId, userId));
             }
 
-            if(exectutedList.Contains(false))
+            if (exectutedList.Contains(false))
             {
                 return false;
-            } else
+            }
+            else
             {
                 return true;
             }

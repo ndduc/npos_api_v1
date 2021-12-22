@@ -1,8 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace POS_Api.Shared.DbHelper
 {
@@ -29,15 +26,17 @@ namespace POS_Api.Shared.DbHelper
             if (value == null)
             {
                 return_value = null_value;
-            } else
+            }
+            else
             {
                 return_value = quote + value + quote;
             }
 
-            if(isLast)
+            if (isLast)
             {
                 return return_value;
-            } else
+            }
+            else
             {
                 return return_value + comma;
             }

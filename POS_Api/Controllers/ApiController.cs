@@ -2,17 +2,14 @@
 using Microsoft.Extensions.Logging;
 using POS_Api.Core.Implementation;
 using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
 using POS_Api.Model;
 using POS_Api.Model.EnumData;
 using POS_Api.Shared.HttpHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace POS_Api.Controllers
 {
@@ -81,7 +78,8 @@ namespace POS_Api.Controllers
                     body = "INTERNAL ERROR\t\tNo Specific Cause";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 body = "INTERNAL ERROR\t\t" + e.ToString();
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
@@ -122,12 +120,14 @@ namespace POS_Api.Controllers
                 {
                     body = "OK";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
-                } else
+                }
+                else
                 {
                     body = "Something, Unable to Registered This User";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 body = "INTERNAL ERROR\t\t" + e.ToString();
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
@@ -285,10 +285,11 @@ namespace POS_Api.Controllers
             {
                 Request.Query.TryGetValue("type", out var type);
 
-                if(muserid == null || muserid.Length < 5)
+                if (muserid == null || muserid.Length < 5)
                 {
                     isSuccess = _UserLogic.AddRelationLocationUser(null, userid, locaid, type.ToString().ToUpper());
-                } else
+                }
+                else
                 {
                     isSuccess = _UserLogic.AddRelationLocationUser(muserid, userid, locaid, type.ToString().ToUpper());
                 }
@@ -350,7 +351,8 @@ namespace POS_Api.Controllers
                         body = "Something, Unable to Registered This User";
                         return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                     }
-                } else
+                }
+                else
                 {
                     body = "Invalid User Type";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
@@ -390,7 +392,7 @@ namespace POS_Api.Controllers
         #endregion
 
         #region PRODUCT
-        [HttpPost , Route("pos/{userid?}/{locid?}/product/add")]
+        [HttpPost, Route("pos/{userid?}/{locid?}/product/add")]
         public dynamic AddProduct(string userid, string locid)
         {
             Debug.WriteLine("USER ID\t\t" + userid);
@@ -522,23 +524,26 @@ namespace POS_Api.Controllers
 
 
         [HttpPost, Route("pos/{userid?}/{locid?}/{productId?}/product/itemcode")]
-        public dynamic AddProductItemCode(string userid, string locid, string productId) {
+        public dynamic AddProductItemCode(string userid, string locid, string productId)
+        {
             dynamic body;
             bool isSucess;
             Request.Form.TryGetValue("itemcode", out var ItemCode);
             try
             {
                 isSucess = _ProductLogic.AddRelationItemCode(locid, productId, userid, ItemCode);
-                if(isSucess)
+                if (isSucess)
                 {
                     body = JsonSerializer.Serialize(isSucess);
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
-                } else
+                }
+                else
                 {
                     body = "Something Wrong, Check Your Parameter";
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 body = "INTERNAL ERROR\t\t" + e.ToString();
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);

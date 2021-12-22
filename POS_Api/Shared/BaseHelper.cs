@@ -1,13 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using POS_Api.Database.MySql.Configuration;
-using POS_Api.Shared.DbHelper;
-using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 #pragma warning disable S125 // Sections of code should not be commented out
 namespace POS_Api.Shared.ExceptionHelper
 {
@@ -106,7 +101,8 @@ namespace POS_Api.Shared.ExceptionHelper
                 if (item.Contains(","))
                 {
                     return item.Split(',').ToList();
-                } else
+                }
+                else
                 {
                     List<string> lst = new List<string>();
                     lst.Add(item);

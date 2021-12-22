@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace POS_Api.Model.ReponseViewModel
+﻿namespace POS_Api.Model.ReponseViewModel
 {
     public class ProductAddModelVm
     {
@@ -15,6 +10,6 @@ namespace POS_Api.Model.ReponseViewModel
         public string Product_Tax { get; set; }
         public string Product_Discount { get; set; }
         public string Product_ItemCode { get; set; }
-        public string Product_Upc{ get; set; }
+        public string Product_Upc { get; set; }
     }
 }

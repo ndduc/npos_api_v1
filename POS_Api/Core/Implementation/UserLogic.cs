@@ -1,18 +1,10 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using POS_Api.Shared.Security;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
@@ -30,8 +22,8 @@ namespace POS_Api.Core.Implementation
             bool isIdUnqiue = false;
             bool isSucess = false;
             // Verify whether this id is unique
-      
-            while(!isIdUnqiue)
+
+            while (!isIdUnqiue)
             {
                 id = Guid.NewGuid().ToString();
                 isIdUnqiue = _userRepos.VerifyUIdUnique(id);
@@ -39,7 +31,7 @@ namespace POS_Api.Core.Implementation
 
             bool isUserNameUnique = _userRepos.VerifyUserName(userModel.UserName);
 
-            if(isIdUnqiue && isUserNameUnique)
+            if (isIdUnqiue && isUserNameUnique)
             {
                 userModel.UId = id;
                 //Hash Password
@@ -47,7 +39,8 @@ namespace POS_Api.Core.Implementation
                 // Insert Record, return false if the insertion false
                 isSucess = _userRepos.AddUserExecution(userModel);
                 return isSucess;
-            } else
+            }
+            else
             {
                 return isSucess;
             }
@@ -75,14 +68,15 @@ namespace POS_Api.Core.Implementation
                 userModel.Password = HashingPassword.EncryptPlainTextToCipherText(userModel.Password);
                 // Insert Record, return false if the insertion false
                 isSucess = _userRepos.AddUserExecution(userModel);
-                if(isSucess)
+                if (isSucess)
                 {
                     return _userRepos.AddRelationLocationUser(parentId, id, locationId, type);
-                } else
+                }
+                else
                 {
                     return isSucess;
                 }
-                
+
             }
             else
             {
@@ -93,7 +87,8 @@ namespace POS_Api.Core.Implementation
         // Return true indicate the id is unique
 
 
-        public UserModel GetUserByPassAndUserName(string userName, string pass) {
+        public UserModel GetUserByPassAndUserName(string userName, string pass)
+        {
             return _userRepos.GetUserByPassAndUserNameExecution(userName, pass);
         }
 

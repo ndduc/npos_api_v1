@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace POS_Api.Model
+﻿namespace POS_Api.Model
 {
     public class UserModel
     {
@@ -29,7 +24,7 @@ namespace POS_Api.Model
         public string Error { get; set; }
         public UserModel() { }
         public UserModel(string UId, string UserName, string Password, string FirstName, string LastName, string Email, string Email2,
-            string Phone, string Address, string UserType ,string AddedDateTime, string UpdatedDateTime)
+            string Phone, string Address, string UserType, string AddedDateTime, string UpdatedDateTime)
         {
             this.UId = UId;
             this.UserName = UserName;

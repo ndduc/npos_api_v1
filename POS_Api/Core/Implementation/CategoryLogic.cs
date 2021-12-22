@@ -1,20 +1,15 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
-    public class CategoryLogic: BaseHelper, ICategoryLogic
+    public class CategoryLogic : BaseHelper, ICategoryLogic
     {
         private readonly ICategoryRepos _categoryRepos;
         private readonly IUserRepos _userRepos;
@@ -52,7 +47,8 @@ namespace POS_Api.Core.Implementation
             {
                 return _categoryRepos.GetCategoryByLocationIdExecution(locationId);
             }
-            else {
+            else
+            {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }
         }
@@ -68,13 +64,14 @@ namespace POS_Api.Core.Implementation
                 id = Guid.NewGuid().ToString();
                 isUnqiue = _categoryRepos.VerifyUIdUnique(id);
             }
-            if(_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
+            if (_userRepos.VerifyUser(userId) && _locationRepos.VerifyUIdExist(locationId))
             {
                 model.UId = id;
                 model.AddedBy = userId;
                 model.LocationUId = locationId;
                 return _categoryRepos.AddCategoryExecution(model);
-            } else
+            }
+            else
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }
@@ -82,13 +79,15 @@ namespace POS_Api.Core.Implementation
 
         public bool AddCategoryProductRelation(string uid, string productId, string locationId, string userId)
         {
-            if (_userRepos.VerifyUser(userId) 
+            if (_userRepos.VerifyUser(userId)
                 && _locationRepos.VerifyUIdExist(locationId)
                 && _categoryRepos.VerifyUIdExist(uid)
-                && !_categoryRepos.VerifyCategoryProductRelationExist(uid, productId, locationId)) {
+                && !_categoryRepos.VerifyCategoryProductRelationExist(uid, productId, locationId))
+            {
 
                 return _categoryRepos.AddCategoryProductRelationExecution(uid, productId, locationId, userId);
-            } else
+            }
+            else
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }

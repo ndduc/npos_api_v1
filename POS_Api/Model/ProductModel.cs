@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace POS_Api.Model
 {
@@ -28,7 +25,7 @@ namespace POS_Api.Model
 
         }
 
-        public ProductModel (string uid, string desc, string secDesc, string thirdDesc, int upc,
+        public ProductModel(string uid, string desc, string secDesc, string thirdDesc, int upc,
             double cost, double price, string addedDatetime, string updateDatetime, string addBy, string updateBy)
         {
             UId = uid;

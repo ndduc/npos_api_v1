@@ -1,16 +1,11 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
@@ -34,12 +29,12 @@ namespace POS_Api.Core.Implementation
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationId);
 
-            if(!isUserValid)
+            if (!isUserValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
             }
 
-            if(!isLocationValid)
+            if (!isLocationValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
@@ -79,7 +74,7 @@ namespace POS_Api.Core.Implementation
             bool isProductValid = _productRepos.VerifyUIdExist(productId);
             bool isTaxRelationExist = _taxRepos.VerifyTaxProductRelation(productId, locationId);
             bool isProductLocationExist = _productRepos.IsProductLocationExist(locationId, productId);  // Verify If Product and Location are sync
-            
+
             if (!isUserValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));

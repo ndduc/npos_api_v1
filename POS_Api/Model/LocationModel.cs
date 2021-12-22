@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace POS_Api.Model
+﻿namespace POS_Api.Model
 {
     public class LocationModel
     {
-        public string UId{ get; set; }
-        public string Name { get; set;}
+        public string UId { get; set; }
+        public string Name { get; set; }
         public string Address { get; set; }
         public int ZipCode { get; set; }
         public string State { get; set; }

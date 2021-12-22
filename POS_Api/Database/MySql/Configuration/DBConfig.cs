@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace POS_Api.Database.MySql.Configuration
+﻿namespace POS_Api.Database.MySql.Configuration
 {
     public class DBConfig
     {
@@ -15,9 +10,9 @@ namespace POS_Api.Database.MySql.Configuration
 
         public string GetConfiguration()
         {
-            return "Data Source=" + host + "," 
-                + port + ";Initial Catalog=" + db 
-                + ";User ID=" + uName + ";Password=" + pass+ ";";
+            return "Data Source=" + host + ","
+                + port + ";Initial Catalog=" + db
+                + ";User ID=" + uName + ";Password=" + pass + ";";
         }
     }
 }

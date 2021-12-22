@@ -1,8 +1,5 @@
 ﻿using POS_Api.Model;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Interface
 {
@@ -17,7 +14,7 @@ namespace POS_Api.Core.Interface
         public int GetDepartmentPaginateCount(Dictionary<string, string> param);
         public IEnumerable<DepartmentModel> GetDepartmentPaginate(Dictionary<string, string> param);
 
-        public DepartmentModel GetDepartmentById(string userId,string locId, string departmentId);
+        public DepartmentModel GetDepartmentById(string userId, string locId, string departmentId);
 
         public IEnumerable<DepartmentModel> GetDepartmentByDescription(string userId, string locId, string description);
     }

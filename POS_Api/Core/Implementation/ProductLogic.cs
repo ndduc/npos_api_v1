@@ -1,20 +1,13 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
-using POS_Api.Model.EnumData;
 using POS_Api.Model.ReponseViewModel;
 using POS_Api.Model.ViewModel;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 
 namespace POS_Api.Core.Implementation
@@ -59,7 +52,7 @@ namespace POS_Api.Core.Implementation
 
             isUserValid = _userRepos.VerifyUser(userId);
 
-            if(isUserValid)
+            if (isUserValid)
             {
                 model.UId = id;
                 model.AddedBy = userId;
@@ -69,11 +62,13 @@ namespace POS_Api.Core.Implementation
                 if (isSucess)
                 {
                     return _productRepos.AddProductExecutionRelation(model, userId, locationId);
-                } else
+                }
+                else
                 {
                     return isSucess;
                 }
-            } else
+            }
+            else
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }
@@ -99,16 +94,16 @@ namespace POS_Api.Core.Implementation
 
 
             // Verify User
-            bool isUserValid = _userRepos.VerifyUser(userId);   
+            bool isUserValid = _userRepos.VerifyUser(userId);
             // Verify Location
             bool isLocationValid = _locationRepos.VerifyUIdExist(locId);
 
-            if(!isUserValid)
+            if (!isUserValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
             }
 
-            if(!isLocationValid)
+            if (!isLocationValid)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
@@ -132,10 +127,11 @@ namespace POS_Api.Core.Implementation
             List<string> taxList = GetListFromString(tax);
             List<string> discountList = GetListFromString(discount);
 
-            if(itemCodeList.Count > 0)
+            if (itemCodeList.Count > 0)
             {
                 model.ItemCode = 1;
-            } else
+            }
+            else
             {
                 model.ItemCode = 0;
             }
@@ -175,7 +171,8 @@ namespace POS_Api.Core.Implementation
                 if (isProductLocationRelationSucess)
                 {
                     responseModel.Product_Location_Status = "OK";
-                } else
+                }
+                else
                 {
                     responseModel.Product_Location_Status = "FAILED";
                 }
@@ -266,7 +263,7 @@ namespace POS_Api.Core.Implementation
         {
             bool checker = false;
 
-            if(itemList.Count > 0)
+            if (itemList.Count > 0)
             {
                 switch (option)
                 {
@@ -298,11 +295,11 @@ namespace POS_Api.Core.Implementation
                         break;
                 }
             }
-            
+
             return checker;
         }
 
-   
+
 
         public bool UpdateProduct(ProductModel model, string userId, string locationId)
         {
@@ -412,10 +409,11 @@ namespace POS_Api.Core.Implementation
             {
                 return _productRepos.GetProductPaginateCount(locationId);
                 // Search Type indicate search by default (locId) or itemId, etc ...
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
-            }   
+            }
         }
 
         public IEnumerable<ProductModel> GetProductPaginate(Dictionary<string, string> param)
@@ -428,14 +426,16 @@ namespace POS_Api.Core.Implementation
 
             try
             {
-                if ( locationId != null)
+                if (locationId != null)
                 {
                     return _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
-                } else if (itemCode != null)
+                }
+                else if (itemCode != null)
                 {
                     // add repos call the get product by item here
                     throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
-                } else
+                }
+                else
                 {
                     throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
                 }

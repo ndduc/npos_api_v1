@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace POS_Api.Model
+﻿namespace POS_Api.Model
 {
     public class CategoryModel
     {
         public string UId { get; set; }
         public string Description { get; set; }
+        public string SecondDescription { get; set; }
         public string AddedDateTime { get; set; }
         public string UpdatedDateTime { get; set; }
 

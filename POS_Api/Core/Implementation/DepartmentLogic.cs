@@ -1,16 +1,11 @@
-﻿using MySql.Data.MySqlClient;
-using POS_Api.Core.Interface;
-using POS_Api.Database.MySql.Configuration;
+﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
-using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
@@ -145,14 +140,17 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        public DepartmentModel GetDepartmentById(string userId, string locId, string departmentId) {
-            if (_userRepos.VerifyUser(userId)) {
+        public DepartmentModel GetDepartmentById(string userId, string locId, string departmentId)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
                 return _departmentRepos.GetDepartmentById(locId, departmentId);
-            } else
+            }
+            else
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
             }
-            
+
         }
 
         public IEnumerable<DepartmentModel> GetDepartmentByDescription(string userId, string locId, string description)
