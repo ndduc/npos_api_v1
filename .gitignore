@@ -354,3 +354,7 @@ dkms.conf
 ./.vs
 .*
 !/.gitignore
+
+
+**/POS_Api/bin
+**/POS_Api/obj
