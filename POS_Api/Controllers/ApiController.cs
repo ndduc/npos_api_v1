@@ -686,10 +686,14 @@ namespace POS_Api.Controllers
             dynamic body;
             try
             {
+                Request.Form.TryGetValue("id", out var Id);
                 Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("note", out var Note);
                 CategoryModel model = new CategoryModel()
                 {
-                    Description = Desc
+                    Description = Desc,
+                    UId = Id,
+                    SecondDescription = Note
                 };
                 if (_categoryLogic.UpdateCategory(model, userid, locid))
                 {
@@ -1104,10 +1108,14 @@ namespace POS_Api.Controllers
             {
                 Request.Form.TryGetValue("desc", out var Desc);
                 Request.Form.TryGetValue("rate", out var Rate);
+                Request.Form.TryGetValue("id", out var Id);
+                Request.Form.TryGetValue("note", out var Note);
                 DiscountModel model = new DiscountModel()
                 {
                     Description = Desc,
-                    Rate = double.Parse(Rate)
+                    Rate = double.Parse(Rate),
+                    UId = Id,
+                    SecondDescription = Note
                 };
                 if (_discountLogic.UpdateDiscount(model, userid, locid))
                 {
@@ -1308,9 +1316,13 @@ namespace POS_Api.Controllers
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("id", out var Id);
+                Request.Form.TryGetValue("note", out var Note);
                 SectionModel model = new SectionModel()
                 {
-                    Description = Desc
+                    Description = Desc,
+                    UId = Id,
+                    SecondDescription = Note
                 };
                 if (_sectionLogic.UpdateSection(model, userid, locid))
                 {
@@ -1515,10 +1527,14 @@ namespace POS_Api.Controllers
             {
                 Request.Form.TryGetValue("desc", out var Desc);
                 Request.Form.TryGetValue("rate", out var Rate);
+                Request.Form.TryGetValue("id", out var Id);
+                Request.Form.TryGetValue("note", out var Note);
                 TaxModel model = new TaxModel()
                 {
                     Description = Desc,
-                    Rate = double.Parse(Rate)
+                    Rate = double.Parse(Rate),
+                    UId = Id,
+                    SecondDescription = Note
                 };
                 if (_taxLogic.UpdateTax(model, userid, locid))
                 {
@@ -1718,9 +1734,13 @@ namespace POS_Api.Controllers
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("id", out var Id);
+                Request.Form.TryGetValue("note", out var Note);
                 VendorModel model = new VendorModel()
                 {
-                    Description = Desc
+                    Description = Desc,
+                    UId = Id,
+                    SecondDescription = Note
                 };
                 if (_vendorLogic.UpdateVendor(model, userid, locid))
                 {
