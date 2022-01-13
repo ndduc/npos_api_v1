@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace POS_Api.Repository.Implementation
 {
-    public class UpcRepos : BaseHelper
+    public class UpcRepos : BaseHelper, IUpcRepos
     {
         public bool RemoveUpcExecution(string productUid, string locationUid, string upc)
         {

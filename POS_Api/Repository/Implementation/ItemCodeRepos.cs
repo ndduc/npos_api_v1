@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace POS_Api.Repository.Implementation
 {
-    public class ItemCodeRepos : BaseHelper
+    public class ItemCodeRepos : BaseHelper, IItemCodeRepos
     {
         public bool RemoveItemCodeExecution(string productUid, string locationUid, string itemCode)
         {
