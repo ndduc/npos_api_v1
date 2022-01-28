@@ -75,28 +75,16 @@ namespace POS_Api.Core.Implementation
 
         }
 
-        public ProductAddModelVm AddProduct(ProductModel model, Dictionary<string, string> param)
+        public ProductAddModelVm AddProduct(ProductModel model)
         {
             string id = null;
             bool isUnqiue = false;
 
-            param.TryGetValue("userid", out string userId);
-            param.TryGetValue("locid", out string locId);
-            param.TryGetValue("departmentList", out string dept);
-            param.TryGetValue("categoryList", out string cate);
-            param.TryGetValue("vendorList", out string ven);
-            param.TryGetValue("sectionList", out string sec);
-            param.TryGetValue("discount", out string discount);
-            param.TryGetValue("tax", out string tax);
-            param.TryGetValue("itemCodeList", out string itemCode);
-            param.TryGetValue("upcList", out string upc);
-
-
 
             // Verify User
-            bool isUserValid = _userRepos.VerifyUser(userId);
+            bool isUserValid = _userRepos.VerifyUser(model.UserUId);
             // Verify Location
-            bool isLocationValid = _locationRepos.VerifyUIdExist(locId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(model.LocationUId);
 
             if (!isUserValid)
             {
@@ -118,14 +106,14 @@ namespace POS_Api.Core.Implementation
             // Do Check Relation Check
             // No Need To Check Product Location Relation as the product uid is always new
 
-            List<string> deptList = GetListFromString(dept);
-            List<string> cateList = GetListFromString(cate);
-            List<string> venList = GetListFromString(ven);
-            List<string> secList = GetListFromString(sec);
-            List<string> itemCodeList = GetListFromString(itemCode);
-            List<string> upcList = GetListFromString(upc);
-            List<string> taxList = GetListFromString(tax);
-            List<string> discountList = GetListFromString(discount);
+            List<string> deptList = model.DepartmentList;
+            List<string> cateList = model.CategoryList;
+            List<string> venList = model.VendorList;
+            List<string> secList = model.SectionList;
+            List<string> itemCodeList = model.ItemCodeList;
+            List<string> upcList = model.UpcList;
+            List<string> taxList = model.TaxList;
+            List<string> discountList = model.DiscountList;
 
             if (itemCodeList.Count > 0)
             {
@@ -146,7 +134,7 @@ namespace POS_Api.Core.Implementation
             }
 
             model.UId = id;
-            model.AddedBy = userId;
+            model.AddedBy = model.UserUId;
 
             bool isSucess = _productRepos.AddProductExecution(model);
 
@@ -154,16 +142,17 @@ namespace POS_Api.Core.Implementation
 
             if (isSucess)
             {
-                bool isProductLocationRelationSucess = _productRepos.AddProductExecutionRelation(model, userId, locId);
+                bool isProductLocationRelationSucess = _productRepos.AddProductExecutionRelation(model, model.UserUId, model.LocationUId);
 
-                bool isDepartmentSucess = AddProductFunctionHelper(deptList, model.UId, userId, locId, "DEPARTMENT");
-                bool isCategorySucess = AddProductFunctionHelper(cateList, model.UId, userId, locId, "CATEGORY");
-                bool isVendorSucess = AddProductFunctionHelper(venList, model.UId, userId, locId, "VENDOR");
-                bool isSectionSucess = AddProductFunctionHelper(secList, model.UId, userId, locId, "SECTION");
-                bool isTaxSucess = AddProductFunctionHelper(taxList, model.UId, userId, locId, "TAX");
-                bool isDiscountSucess = AddProductFunctionHelper(discountList, model.UId, userId, locId, "DISCOUNT");
-                bool isItemCodeSucess = AddProductFunctionHelper(itemCodeList, model.UId, userId, locId, "ITEMCODE");
-                bool isUpcSucess = AddProductFunctionHelper(upcList, model.UId, userId, locId, "UPC");
+                bool isDepartmentSucess = AddProductFunctionHelper(deptList, model.UId, model.UserUId, model.LocationUId, "DEPARTMENT");
+                bool isCategorySucess = AddProductFunctionHelper(cateList, model.UId, model.UserUId, model.LocationUId, "CATEGORY");
+                bool isVendorSucess = AddProductFunctionHelper(venList, model.UId, model.UserUId, model.LocationUId, "VENDOR");
+                bool isSectionSucess = AddProductFunctionHelper(secList, model.UId, model.UserUId, model.LocationUId, "SECTION");
+                bool isTaxSucess = AddProductFunctionHelper(taxList, model.UId, model.UserUId, model.LocationUId, "TAX");
+                bool isDiscountSucess = AddProductFunctionHelper(discountList, model.UId, model.UserUId, model.LocationUId, "DISCOUNT");
+
+                bool isItemCodeSucess = AddProductFunctionHelper(itemCodeList, model.UId, model.UserUId, model.LocationUId, "ITEMCODE");
+                bool isUpcSucess = AddProductFunctionHelper(upcList, model.UId, model.UserUId, model.LocationUId, "UPC");
 
                 // Still Missing Upc Logic
 
@@ -259,37 +248,37 @@ namespace POS_Api.Core.Implementation
             }
         }
 
-        private bool AddProductFunctionHelper(List<string> itemList, string productId, string userId, string locationId, string option)
+        private bool AddProductFunctionHelper(List<string> valueList, string productId, string userId, string locationId, string option)
         {
             bool checker = false;
 
-            if (itemList.Count > 0)
+            if (valueList.Count > 0)
             {
                 switch (option)
                 {
                     case "CATEGORY":
-                        checker = _categoryRepos.AddCategoryExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _categoryRepos.AddCategoryExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "DEPARTMENT":
-                        checker = _departmentRepos.AddDepartmentExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _departmentRepos.AddDepartmentExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "SECTION":
-                        checker = _sectionRepos.AddSectionExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _sectionRepos.AddSectionExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "VENDOR":
-                        checker = _vendorRepos.AddVendorExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _vendorRepos.AddVendorExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "TAX":
-                        checker = _taxRepos.AddTaxExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _taxRepos.AddTaxExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "DISCOUNT":
-                        checker = _discountRepos.AddDiscountExecutionFromList(itemList, productId, locationId, userId);
+                        checker = _discountRepos.AddDiscountExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "ITEMCODE":
-                        checker = AddItemCodeExecutionFromList(itemList, productId, locationId, userId);
+                        checker = AddItemCodeExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "UPC":
-                        checker = AddUpcExecutionFromList(itemList, productId, locationId, userId);
+                        checker = AddUpcExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     default:
                         break;

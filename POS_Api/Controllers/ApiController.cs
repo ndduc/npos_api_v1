@@ -8,6 +8,7 @@ using POS_Api.Shared.HttpHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Text.Json;
 
@@ -393,43 +394,42 @@ namespace POS_Api.Controllers
 
         #region PRODUCT
         [HttpPost, Route("pos/{userid?}/{locid?}/product/add")]
+        //https://stackoverflow.com/questions/33711629/incorrect-content-type-exception-throws-angular-mvc-6-application
         public dynamic AddProduct(string userid, string locid)
         {
-            Debug.WriteLine("USER ID\t\t" + userid);
             dynamic body;
             bool isSucess = false;
             try
             {
-                Request.Form.TryGetValue("desc", out var Desc);
-                Request.Form.TryGetValue("desc2", out var Desc2);
-                Request.Form.TryGetValue("desc3", out var Desc3);
-                Request.Form.TryGetValue("upc", out var Upc);
-                Request.Form.TryGetValue("code", out var ItemCode);
+                Request.Form.TryGetValue("description", out var Desc);
+                Request.Form.TryGetValue("second_description", out var Desc2);
+                Request.Form.TryGetValue("third_description", out var Desc3);
                 Request.Form.TryGetValue("cost", out var Cost);
                 Request.Form.TryGetValue("price", out var Price);
-
-                // Extended Data
-                Request.Form.TryGetValue("departmentList", out var DepartmentList);
-                Request.Form.TryGetValue("categoryList", out var CategoryList);
-                Request.Form.TryGetValue("vendorList", out var VendorList);
-                Request.Form.TryGetValue("sectionList", out var SectionList);
-                Request.Form.TryGetValue("discount", out var discount);
-                Request.Form.TryGetValue("tax", out var tax);
-                Request.Form.TryGetValue("itemCodeList", out var ItemCodeList);
-                Request.Form.TryGetValue("upcList", out var UpcList);
-
-                Dictionary<string, string> param = new Dictionary<string, string>() {
-                    {"userid", userid},
-                    {"locid", locid},
-                    {"departmentList", DepartmentList},
-                    {"categoryList", CategoryList},
-                    {"vendorList", VendorList},
-                    {"sectionList", SectionList},
-                    {"discount", discount},
-                    {"tax", tax},
-                    {"itemCodeList", ItemCodeList},
-                    {"upcList", UpcList},
-                };
+                Request.Form.TryGetValue("departmentList", out var department);
+                Request.Form.TryGetValue("categoryList", out var category);
+                Request.Form.TryGetValue("vendorList", out var vendor);
+                Request.Form.TryGetValue("sectionList", out var section);
+                Request.Form.TryGetValue("discountList", out var discount);
+                Request.Form.TryGetValue("taxList", out var tax);
+                Request.Form.TryGetValue("itemCodeList", out var itemcode);
+                Request.Form.TryGetValue("upcList", out var upc);
+                List<string> departmentList 
+                                    = JsonSerializer.Deserialize<List<string>>(department);
+                List<string> categoryList
+                                    = JsonSerializer.Deserialize<List<string>>(category);
+                List<string> vendorList
+                                    = JsonSerializer.Deserialize<List<string>>(vendor);
+                List<string> sectionList
+                                    = JsonSerializer.Deserialize<List<string>>(section);
+                List<string> discountList
+                                    = JsonSerializer.Deserialize<List<string>>(discount);
+                List<string> taxList
+                                    = JsonSerializer.Deserialize<List<string>>(tax);
+                List<string> itemCodeList
+                                    = JsonSerializer.Deserialize<List<string>>(itemcode);
+                List<string> upcList
+                                    = JsonSerializer.Deserialize<List<string>>(upc);
 
                 if (userid == null || userid.Length < 36 || locid == null || locid.Length < 36)
                 {
@@ -439,19 +439,11 @@ namespace POS_Api.Controllers
                 else
                 {
 
-                    ProductModel model = new ProductModel(Desc, Desc2, Desc3, 0, 0, double.Parse(Price));
-                    body = JsonSerializer.Serialize(_ProductLogic.AddProduct(model, param));
+                    ProductModel model = new ProductModel(Desc, Desc2, Desc3, double.Parse(Cost), double.Parse(Price),
+                        departmentList, categoryList, vendorList, sectionList, discountList, taxList, itemCodeList,
+                        upcList, userid, locid) ;
+                    body = JsonSerializer.Serialize(_ProductLogic.AddProduct(model));
                     return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
-                    /*isSucess = _ProductLogic.AddProduct(model, userid, locid);
-                    if(isSucess)
-                    {
-                        body = "OK";
-                        return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
-                    } else
-                    {
-                        body = "INTERNAL ERROR FAILED TO INSERT";
-                        return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
-                    }*/
                 }
             }
             catch (Exception e)

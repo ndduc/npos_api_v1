@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace POS_Api.Model
 {
@@ -16,10 +17,39 @@ namespace POS_Api.Model
         public string UpdatedDateTime { get; set; }
         public string AddedBy { get; set; }
         public string UpdatedBy { get; set; }
+
+        public List<string> DepartmentList { get; set; }
+        public List<string> CategoryList { get; set; }
+        public List<string> VendorList { get; set; }
+        public List<string> SectionList { get; set; }
+        public List<string> DiscountList { get; set; }
+        public List<string> TaxList { get; set; }
+        public List<string> ItemCodeList { get; set; }
+        public List<string> UpcList { get; set; }
+
+        public string UserUId { get; set; }
+        public string LocationUId { get; set; }
+
         public bool IsError { get; set; }
         public string Error { get; set; }
 
-        public List<string> ItemCodeList { get; set; }
+        public void print()
+        {
+            Console.WriteLine(UId);
+            Console.WriteLine(Description);
+            Console.WriteLine(SecondDescription);
+            Console.WriteLine(ThirdDescription);
+            Console.WriteLine(Upc);
+            Console.WriteLine(ItemCode);
+            Console.WriteLine(Cost);
+            Console.WriteLine(Price);
+            Console.WriteLine(AddedDateTime);
+            Console.WriteLine(UpdatedDateTime);
+            Console.WriteLine(AddedBy);
+            Console.WriteLine(UpdatedBy);
+            Console.WriteLine(Error);
+        }
+
         public ProductModel()
         {
 
@@ -42,15 +72,29 @@ namespace POS_Api.Model
         }
 
         //Use In Add Product
-        public ProductModel(string desc, string secDesc, string thirdDesc, int upc,
-           double cost, double price)
+        public ProductModel(string desc, string secDesc, string thirdDesc,
+           double cost, double price, List<string> departmentList,
+           List<string> categoryList, List<string> vendorList,
+           List<string> sectionList, List<string> discountList,
+           List<string> taxList, List<string> itemCodeList,
+           List<string> upcList, string userUId, string locationUId)
         {
             Description = desc;
             SecondDescription = secDesc;
             ThirdDescription = thirdDesc;
-            Upc = upc;
             Cost = cost;
             Price = price;
+            DepartmentList = departmentList;
+            CategoryList = categoryList;
+            SectionList = sectionList;
+            VendorList = vendorList;
+            DiscountList = discountList;
+            TaxList = taxList;
+            ItemCodeList = itemCodeList;
+            UpcList = upcList;
+            UserUId = userUId;
+            LocationUId = locationUId;
+
         }
 
 

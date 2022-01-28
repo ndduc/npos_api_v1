@@ -9,7 +9,7 @@ namespace POS_Api.Core.Interface
     {
         public bool AddProduct(ProductModel model, string userId, string locationId);
 
-        public ProductAddModelVm AddProduct(ProductModel model, Dictionary<string, string> param);
+        public ProductAddModelVm AddProduct(ProductModel model);
 
         public bool UpdateProduct(ProductModel model, string userId, string locationId);
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId);
