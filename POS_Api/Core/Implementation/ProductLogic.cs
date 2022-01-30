@@ -288,6 +288,39 @@ namespace POS_Api.Core.Implementation
             return checker;
         }
 
+        private bool UpdateProductFunctionHelper(List<string> valueList, string productId, string userId, string locationId, string option)
+        {
+            bool checker = false;
+
+            if (valueList.Count > 0)
+            {
+                switch (option)
+                {
+                    case "CATEGORY":
+                        checker = _categoryRepos.UpdateCategoryExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    case "DEPARTMENT":
+                        checker = _departmentRepos.UpdateDepartmentExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    case "SECTION":
+                        checker = _sectionRepos.UpdateSectionExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    case "VENDOR":
+                        checker = _vendorRepos.UpdateVendorExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    case "TAX":
+                        checker = _taxRepos.UpdateTaxExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    case "DISCOUNT":
+                        checker = _discountRepos.UpdateDiscountExecutionFromList(valueList, productId, locationId, userId);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return checker;
+        }
 
 
         public bool UpdateProduct(ProductModel model, string userId, string locationId)
@@ -323,6 +356,150 @@ namespace POS_Api.Core.Implementation
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
             }
+        }
+
+        public ProductAddModelVm UpdateProduct(ProductModel model) {
+            // Verify User
+            bool isUserValid = _userRepos.VerifyUser(model.UserUId);
+            // Verify Location
+            bool isLocationValid = _locationRepos.VerifyUIdExist(model.LocationUId);
+
+            bool isProductExist = _productRepos.VerifyUIdExist(model.UId);
+
+            bool isSucess = false;
+            if (!isUserValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid User"));
+            }
+
+            if (!isLocationValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+            }
+
+            if (!isProductExist)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Selected Product Not Exist"));
+            }
+
+            List<string> deptList = model.DepartmentList;
+            List<string> cateList = model.CategoryList;
+            List<string> venList = model.VendorList;
+            List<string> secList = model.SectionList;
+            List<string> itemCodeList = model.ItemCodeList;
+            List<string> upcList = model.UpcList;
+            List<string> taxList = model.TaxList;
+            List<string> discountList = model.DiscountList;
+
+            if (itemCodeList.Count > 0)
+            {
+                model.ItemCode = 1;
+            }
+            else
+            {
+                model.ItemCode = 0;
+            }
+
+            if (upcList.Count > 0)
+            {
+                model.Upc = 1;
+            }
+            else
+            {
+                model.Upc = 0;
+            }
+
+            model.UpdatedBy = model.UserUId;
+
+            ProductAddModelVm responseModel = new ProductAddModelVm();
+
+            isSucess = _productRepos.UpdateProductExecution(model);
+
+            if (isSucess)
+            {
+                bool isProductLocationRelationSucess = _productRepos.UpdateProductExecutionRelation(model, model.LocationUId);
+                bool isDepartmentSucess = UpdateProductFunctionHelper(deptList, model.UId, model.UserUId, model.LocationUId, "DEPARTMENT");
+                bool isCategorySucess = UpdateProductFunctionHelper(cateList, model.UId, model.UserUId, model.LocationUId, "CATEGORY");
+                bool isVendorSucess = UpdateProductFunctionHelper(venList, model.UId, model.UserUId, model.LocationUId, "VENDOR");
+                bool isSectionSucess = UpdateProductFunctionHelper(secList, model.UId, model.UserUId, model.LocationUId, "SECTION");
+                bool isTaxSucess = UpdateProductFunctionHelper(taxList, model.UId, model.UserUId, model.LocationUId, "TAX");
+                bool isDiscountSucess = UpdateProductFunctionHelper(discountList, model.UId, model.UserUId, model.LocationUId, "DISCOUNT");
+
+                #region SET RESPONSE MODEL
+                if (isProductLocationRelationSucess)
+                {
+                    responseModel.Product_Location_Status = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Location_Status = "FAILED";
+                }
+
+                if (isDepartmentSucess)
+                {
+                    responseModel.Product_Department = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Department = "FAILED";
+                }
+
+                if (isCategorySucess)
+                {
+                    responseModel.Product_Category = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Category = "FAILED";
+                }
+
+                if (isVendorSucess)
+                {
+                    responseModel.Product_Vendor = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Vendor = "FAILED";
+                }
+
+                if (isSectionSucess)
+                {
+
+                    responseModel.Product_Section = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Section = "FAILED";
+                }
+
+                if (isTaxSucess)
+                {
+                    responseModel.Product_Tax = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Tax = "FAILED";
+                }
+
+                if (isDiscountSucess)
+                {
+                    responseModel.Product_Discount = "OK";
+                }
+                else
+                {
+                    responseModel.Product_Discount = "FAILED";
+                }
+                #endregion
+                return responseModel;
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Product Is Not Sucessfully Updated"));
+            }
+
+            // Do UPDATE HERE
+            // CHECK relation, if different then do update;
+
         }
 
         public IEnumerable<ProductModel> GetProductByLocation(string userId, string locationId)

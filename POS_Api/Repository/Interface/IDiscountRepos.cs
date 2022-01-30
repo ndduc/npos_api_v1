@@ -14,6 +14,8 @@ namespace POS_Api.Repository.Interface
         public bool AddDiscountProductRelationExecution(string productId, string locationId, string discountId, string userId);
         public bool AddDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
+        public bool UpdateDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
         public int GetDiscountPaginateCount(string locId);
 
         public IEnumerable<DiscountModel> GetDiscountPaginateByDefault(string locId, int startIdx, int endIdx);

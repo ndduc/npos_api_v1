@@ -134,6 +134,24 @@ namespace POS_Api.Repository.Implementation
             return CheckInsertionHelper(res);
         }
 
+        public bool UpdateCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        {
+            List<bool> exectutedList = new List<bool>();
+            foreach (string item in itemIdlist)
+            {
+                exectutedList.Add(UpdateCategoryProductRelationExecution(item, productId, locationId, userId));
+            }
+
+            if (exectutedList.Contains(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public bool AddCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
@@ -184,6 +202,40 @@ namespace POS_Api.Repository.Implementation
 
             return CheckInsertionHelper(res);
         }
+
+        public bool UpdateCategoryProductRelationExecution(string uid, string productId, string locationId, string userId)
+        {
+            int res = 0;
+            Conn = new DBConnection();
+            string query = " UPDATE  ref_location_product_category "
+                            + " SET "
+                            + " `category_uid` = " + DbHelper.SetDBValue(uid, false)
+                            + " `updated_by` = " + DbHelper.SetDBValue(userId, true)
+                            + " WHERE "
+                            + " `product_uid` = " + DbHelper.SetDBValue(productId, true)
+                            + " AND "
+                            + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + ";";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    res = Cmd.ExecuteNonQuery();
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+
+            return CheckInsertionHelper(res);
+        }
+
 
         public bool VerifyCategoryProductRelationExist(string uid, string productId, string locationId)
         {

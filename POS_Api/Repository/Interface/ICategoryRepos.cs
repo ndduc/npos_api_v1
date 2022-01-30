@@ -15,6 +15,8 @@ namespace POS_Api.Repository.Interface
 
         public bool AddCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
+        public bool UpdateCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
         public int GetCategoryPaginateCount(string locId);
         
         public IEnumerable<CategoryModel> GetCategoryPaginateByDefault(string locId, int startIdx, int endIdx);

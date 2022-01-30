@@ -15,6 +15,9 @@ namespace POS_Api.Repository.Interface
 
         public bool AddVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
+        public bool UpdateVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+
+
         public int GetVendorPaginateCount(string locId);
 
         public IEnumerable<VendorModel> GetVendorPaginateByDefault(string locId, int startIdx, int endIdx);

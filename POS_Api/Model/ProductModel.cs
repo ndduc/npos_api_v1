@@ -99,16 +99,30 @@ namespace POS_Api.Model
 
 
         //Use In Update Product
-        public ProductModel(string uid, string desc, string secDesc, string thirdDesc, int upc,
-           double cost, double price)
+        public ProductModel(string desc, string secDesc, string thirdDesc,
+           double cost, double price, List<string> departmentList,
+           List<string> categoryList, List<string> vendorList,
+           List<string> sectionList, List<string> discountList,
+           List<string> taxList, List<string> itemCodeList,
+           List<string> upcList, string userUId, string locationUId, string productUid)
         {
-            UId = uid;
             Description = desc;
             SecondDescription = secDesc;
             ThirdDescription = thirdDesc;
-            Upc = upc;
             Cost = cost;
             Price = price;
+            DepartmentList = departmentList;
+            CategoryList = categoryList;
+            SectionList = sectionList;
+            VendorList = vendorList;
+            DiscountList = discountList;
+            TaxList = taxList;
+            UserUId = userUId;
+            LocationUId = locationUId;
+            UpcList = upcList;
+            ItemCodeList = itemCodeList;
+            UId = productUid;
+
         }
 
     }

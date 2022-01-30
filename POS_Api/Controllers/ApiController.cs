@@ -461,13 +461,36 @@ namespace POS_Api.Controllers
             try
             {
                 Request.Form.TryGetValue("uid", out var Uid);
-                Request.Form.TryGetValue("desc", out var Desc);
-                Request.Form.TryGetValue("desc2", out var Desc2);
-                Request.Form.TryGetValue("desc3", out var Desc3);
-                Request.Form.TryGetValue("upc", out var Upc);
-                Request.Form.TryGetValue("code", out var ItemCode);
+                Request.Form.TryGetValue("description", out var Desc);
+                Request.Form.TryGetValue("second_description", out var Desc2);
+                Request.Form.TryGetValue("third_description", out var Desc3);
                 Request.Form.TryGetValue("cost", out var Cost);
                 Request.Form.TryGetValue("price", out var Price);
+                Request.Form.TryGetValue("departmentList", out var department);
+                Request.Form.TryGetValue("categoryList", out var category);
+                Request.Form.TryGetValue("vendorList", out var vendor);
+                Request.Form.TryGetValue("sectionList", out var section);
+                Request.Form.TryGetValue("discountList", out var discount);
+                Request.Form.TryGetValue("taxList", out var tax);
+                Request.Form.TryGetValue("itemCodeList", out var itemcode);
+                Request.Form.TryGetValue("upcList", out var upc);
+
+                List<string> departmentList
+                                    = JsonSerializer.Deserialize<List<string>>(department);
+                List<string> categoryList
+                                    = JsonSerializer.Deserialize<List<string>>(category);
+                List<string> vendorList
+                                    = JsonSerializer.Deserialize<List<string>>(vendor);
+                List<string> sectionList
+                                    = JsonSerializer.Deserialize<List<string>>(section);
+                List<string> discountList
+                                    = JsonSerializer.Deserialize<List<string>>(discount);
+                List<string> taxList
+                                    = JsonSerializer.Deserialize<List<string>>(tax);
+                List<string> itemCodeList
+                                    = JsonSerializer.Deserialize<List<string>>(itemcode);
+                List<string> upcList
+                                    = JsonSerializer.Deserialize<List<string>>(upc);
 
 
                 if (userid == null || userid.Length < 36 || locid == null || locid.Length < 36)
@@ -477,7 +500,8 @@ namespace POS_Api.Controllers
                 }
                 else
                 {
-                    ProductModel model = new ProductModel(Uid, Desc, Desc2, Desc3, int.Parse(Upc), double.Parse(Cost), double.Parse(Price));
+                    ProductModel model = new ProductModel(Desc, Desc2, Desc3, double.Parse(Cost), double.Parse(Price),
+                        departmentList, categoryList, vendorList, sectionList, discountList, taxList, itemCodeList, upcList, userid, locid, Uid);
                     var res = _ProductLogic.UpdateProduct(model, userid, locid);
                     return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
                 }
