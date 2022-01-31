@@ -502,8 +502,8 @@ namespace POS_Api.Controllers
                 {
                     ProductModel model = new ProductModel(Desc, Desc2, Desc3, double.Parse(Cost), double.Parse(Price),
                         departmentList, categoryList, vendorList, sectionList, discountList, taxList, itemCodeList, upcList, userid, locid, Uid);
-                    var res = _ProductLogic.UpdateProduct(model, userid, locid);
-                    return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
+                    body = JsonSerializer.Serialize(_ProductLogic.UpdateProduct(model));
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
                 }
             }
             catch (Exception e)
@@ -1918,6 +1918,28 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+        #endregion
+
+        #region ITEMCODE
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/get-with-paginate")]
+        public dynamic GetProductItemCodeWithPagination(string userId, string locId, string productId)
+        {
+            Request.Query.TryGetValue("first", out var first);
+            Request.Query.TryGetValue("last", out var last);
+            Request.Query.TryGetValue("column", out var column);
+            Request.Query.TryGetValue("order", out var order);
+            Request.Query.TryGetValue("number", out var number);
+
+
+
+
+
+            return null;
+        }
+
+        #endregion
+
+        #region UPC
         #endregion
     }
 }

@@ -199,6 +199,8 @@ namespace POS_Api.Repository.Implementation
             {
                 List<string> itemCodeList = GetProductItemCode(locationId, model.UId);
                 model.ItemCodeList = itemCodeList;
+                List<string> upcList = new List<string>();
+                model.UpcList = upcList;
                 return model;
             }
             else

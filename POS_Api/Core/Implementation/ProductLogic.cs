@@ -386,32 +386,35 @@ namespace POS_Api.Core.Implementation
             List<string> cateList = model.CategoryList;
             List<string> venList = model.VendorList;
             List<string> secList = model.SectionList;
-            List<string> itemCodeList = model.ItemCodeList;
-            List<string> upcList = model.UpcList;
+            List<string> itemCodeList = model.ItemCodeList == null ? new List<string>() : model.ItemCodeList;
+            List<string> upcList = model.UpcList == null ? new List<string>() : model.UpcList;
             List<string> taxList = model.TaxList;
             List<string> discountList = model.DiscountList;
+            ProductAddModelVm responseModel = new ProductAddModelVm();
 
             if (itemCodeList.Count > 0)
             {
                 model.ItemCode = 1;
+                responseModel.Product_ItemCode = "OK";
             }
             else
             {
                 model.ItemCode = 0;
+                responseModel.Product_ItemCode = "Product Does Not Have Item Code";
             }
 
             if (upcList.Count > 0)
             {
                 model.Upc = 1;
+                responseModel.Product_Upc = "OK";
             }
             else
             {
                 model.Upc = 0;
+                responseModel.Product_Upc = "Product Does Not Have Upc";
             }
 
             model.UpdatedBy = model.UserUId;
-
-            ProductAddModelVm responseModel = new ProductAddModelVm();
 
             isSucess = _productRepos.UpdateProductExecution(model);
 
