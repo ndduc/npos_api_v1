@@ -12,24 +12,26 @@ using System.Threading.Tasks;
 
 namespace POS_Api.Core.Implementation
 {
-    public class ItemCodeLogic : BaseHelper, IItemCodeLogic
+    public class UpcLogic : BaseHelper, IUpcLogic
     {
         private readonly IProductRepos _productRepos;
         private readonly IUserRepos _userRepos;
         private readonly ILocationRepos _locationRepos;
 
-        private readonly IItemCodeRepos _itemCodeRepos;
-
-        public ItemCodeLogic()
+        private readonly IUpcRepos _upcRepos;
+        public UpcLogic()
         {
             _userRepos = new UserRepos();
             _productRepos = new ProductRepos();
             _locationRepos = new LocationRepos();
 
-            _itemCodeRepos = new ItemCodeRepos();
+            _upcRepos = new UpcRepos();
+
+
         }
 
-        public ItemCodeModel GetByItemCode(string userId, string productUid, string locationUid, string itemCode)
+
+        public UpcModel GetByUpc(string userId, string productUid, string locationUid, string upc)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
@@ -49,35 +51,10 @@ namespace POS_Api.Core.Implementation
             {
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
-            return _itemCodeRepos.GetItemCodeById(productUid, locationUid, itemCode);
+            return _upcRepos.GetUpcById(productUid, locationUid, upc);
         }
 
-        public bool VerifyItemCode(string userId, string productUid, string locationUid, string itemCode)
-        {
-            bool isUserValid = _userRepos.VerifyUser(userId);
-            bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
-
-            bool isProductValid = _productRepos.VerifyUIdExist(productUid);
-
-            if (!isProductValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Product"));
-            }
-
-            if (!isUserValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
-            }
-
-            if (!isLocationValid)
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
-            }
-
-            return _itemCodeRepos.VerifyItemCodeExist(productUid, locationUid, itemCode);
-        }
-
-        public ItemCodePaginationModelVm GetItemCodePagination(string userId, string productUid, string locationUid, int limit, int offset, string order)
+        public bool VerifyUpc(string userId, string productUid, string locationUid, string upc)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
@@ -98,10 +75,10 @@ namespace POS_Api.Core.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
 
-            return _itemCodeRepos.GetItemCodePagination(productUid, locationUid, limit, offset, order);
+            return _upcRepos.VerifyUpcExist(productUid, locationUid, upc);
         }
-        
-        public bool AddItemCode(string productUid, string locationUid, string itemCode, string userId)
+
+        public UpcPaginationModelVm GetUpcPagination(string userId, string productUid, string locationUid, int limit, int offset, string order)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
@@ -122,10 +99,10 @@ namespace POS_Api.Core.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
 
-            return _itemCodeRepos.AddItemCodeExecution(productUid, locationUid, itemCode, userId);
+            return _upcRepos.GetUpcPagination(productUid, locationUid, limit, offset, order);
         }
 
-        public bool RemoveItemCode(string productUid, string locationUid, string itemCode, string userId)
+        public bool AddUpc(string productUid, string locationUid, string upc, string userId)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
@@ -146,11 +123,31 @@ namespace POS_Api.Core.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
             }
 
-            return _itemCodeRepos.RemoveItemCodeExecution(productUid, locationUid, itemCode);
+            return _upcRepos.AddUpcExecution(productUid, locationUid, upc, userId);
         }
-   
 
+        public bool RemoveUpc(string productUid, string locationUid, string upc, string userId)
+        {
+            bool isUserValid = _userRepos.VerifyUser(userId);
+            bool isLocationValid = _locationRepos.VerifyUIdExist(locationUid);
+            bool isProductValid = _productRepos.VerifyUIdExist(productUid);
+
+            if (!isProductValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Product"));
+            }
+
+            if (!isUserValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
+            }
+
+            if (!isLocationValid)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Location"));
+            }
+
+            return _upcRepos.RemoveUpcExecution(productUid, locationUid, upc);
+        }
     }
-
-
 }

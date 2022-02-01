@@ -1,4 +1,5 @@
 ﻿using POS_Api.Model;
+using POS_Api.Model.ReponseViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,7 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUpcExist(string productUid, string locationUid, string upc);
         public UpcModel GetUpcById(string productUid, string locationUid, string upc);
         public IEnumerable<UpcModel> GetAllUpcByLocationAndProduct(string productUid, string locationUid);
+
+        public UpcPaginationModelVm GetUpcPagination(string productUid, string locationUid, int limit, int offset, string order);
     }
 }

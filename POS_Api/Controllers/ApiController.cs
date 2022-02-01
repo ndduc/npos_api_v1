@@ -27,6 +27,8 @@ namespace POS_Api.Controllers
         private readonly ISectionLogic _sectionLogic;
         private readonly ITaxLogic _taxLogic;
         private readonly IVendorLogic _vendorLogic;
+        private readonly IItemCodeLogic _itemCodeLogic;
+        private readonly IUpcLogic _upcLogic;
 
         private readonly ILogger<ApiController> _logger;
 
@@ -43,6 +45,8 @@ namespace POS_Api.Controllers
             _sectionLogic = new SectionLogic();
             _taxLogic = new TaxLogic();
             _vendorLogic = new VendorLogic();
+            _itemCodeLogic = new ItemCodeLogic();
+            _upcLogic = new UpcLogic();
         }
 
         #region USER SECTION
@@ -1921,25 +1925,182 @@ namespace POS_Api.Controllers
         #endregion
 
         #region ITEMCODE
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode}/get")]
+        public dynamic GetByItemCode(string userId, string locId, string productId, string itemCode)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_itemCodeLogic.GetByItemCode(userId, productId, locId, itemCode));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/get-with-paginate")]
         public dynamic GetProductItemCodeWithPagination(string userId, string locId, string productId)
         {
-            Request.Query.TryGetValue("first", out var first);
-            Request.Query.TryGetValue("last", out var last);
-            Request.Query.TryGetValue("column", out var column);
+            dynamic body;
+            Request.Query.TryGetValue("limit", out var limit);
+            Request.Query.TryGetValue("offset", out var offset);
             Request.Query.TryGetValue("order", out var order);
-            Request.Query.TryGetValue("number", out var number);
+            try {
+                body = JsonSerializer.Serialize(_itemCodeLogic.GetItemCodePagination(userId, productId, locId, int.Parse(limit), int.Parse(offset), order));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
 
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode}/verify")]
+        public dynamic VerifyItemCode(string userId, string locId, string productId, string itemCode)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_itemCodeLogic.VerifyItemCode(userId, productId, locId, itemCode));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/add)")]
+        public dynamic AddItemCode(string userId, string locId, string productId)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("itemCode", out var itemCode);
 
+            try
+            {
+                body = JsonSerializer.Serialize(_itemCodeLogic.AddItemCode(productId, locId, itemCode, userId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/remove)")]
+        public dynamic RemoveItemCode(string userId, string locId, string productId)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("itemCode", out var itemCode);
 
-            return null;
+            try
+            {
+                body = JsonSerializer.Serialize(_itemCodeLogic.RemoveItemCode(productId, locId, itemCode, userId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
         }
 
         #endregion
 
         #region UPC
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/{upc}/get")]
+        public dynamic GetByUpc(string userId, string locId, string productId, string upc)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_upcLogic.GetByUpc(userId, productId, locId, upc));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/get-with-paginate")]
+        public dynamic GetProductUpcWithPagination(string userId, string locId, string productId)
+        {
+            dynamic body;
+            Request.Query.TryGetValue("limit", out var limit);
+            Request.Query.TryGetValue("offset", out var offset);
+            Request.Query.TryGetValue("order", out var order);
+            try
+            {
+                body = JsonSerializer.Serialize(_upcLogic.GetUpcPagination(userId, productId, locId, int.Parse(limit), int.Parse(offset), order));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/{upc}/verify")]
+        public dynamic VerifyUpc(string userId, string locId, string productId, string upc)
+        {
+            dynamic body;
+            try
+            {
+                body = JsonSerializer.Serialize(_upcLogic.VerifyUpc(userId, productId, locId, upc));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/add)")]
+        public dynamic AddUpc(string userId, string locId, string productId)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("upc", out var upc);
+
+            try
+            {
+                body = JsonSerializer.Serialize(_upcLogic.AddUpc(productId, locId, upc, userId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/remove)")]
+        public dynamic RemoveUpc(string userId, string locId, string productId)
+        {
+            dynamic body;
+            Request.Form.TryGetValue("upc", out var upc);
+
+            try
+            {
+                body = JsonSerializer.Serialize(_upcLogic.RemoveUpc(productId, locId, upc, userId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
         #endregion
     }
 }
