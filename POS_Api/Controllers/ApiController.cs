@@ -1926,7 +1926,7 @@ namespace POS_Api.Controllers
 
         #region ITEMCODE
 
-        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode}/get")]
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode?}/get")]
         public dynamic GetByItemCode(string userId, string locId, string productId, string itemCode)
         {
             dynamic body;
@@ -1941,6 +1941,7 @@ namespace POS_Api.Controllers
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
             }
         }
+
 
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/get-with-paginate")]
         public dynamic GetProductItemCodeWithPagination(string userId, string locId, string productId)
@@ -1960,7 +1961,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode}/verify")]
+        [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode?}/verify")]
         public dynamic VerifyItemCode(string userId, string locId, string productId, string itemCode)
         {
             dynamic body;
