@@ -256,6 +256,7 @@ namespace POS_Api.Repository.Implementation
                 {
                     ItemCodeModel model = new ItemCodeModel()
                     {
+                        Id = DbHelper.TryGet(Reader, "id"),
                         ProductUid = DbHelper.TryGet(Reader, "product_uid"),
                         LocationUid = DbHelper.TryGet(Reader, "location_uid"),
                         ItemCode = DbHelper.TryGet(Reader, "item_code"),
