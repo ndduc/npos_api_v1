@@ -81,8 +81,7 @@ namespace POS_Api.Repository.Implementation
             Conn = new DBConnection();
             string id = null;
             string query = "SELECT id FROM ref_location_product_itemcode WHERE "
-                    + " `product_uid` = " + DbHelper.SetDBValue(productUid, true)
-                    + " AND `location_uid` = " + DbHelper.SetDBValue(locationUid, true)
+                    + " `location_uid` = " + DbHelper.SetDBValue(locationUid, true)
                     + " AND `item_code` = "  + DbHelper.SetDBValue(itemCode, true)
                     + "; ";
             if (Conn.IsConnect())
