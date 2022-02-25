@@ -1977,7 +1977,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/add)")]
+        [HttpPost, Route("pos/{userId?}/{locId?}/{productId?}/item-code/add")]
         public dynamic AddItemCode(string userId, string locId, string productId)
         {
             dynamic body;
@@ -1995,7 +1995,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/remove)")]
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/remove")]
         public dynamic RemoveItemCode(string userId, string locId, string productId)
         {
             dynamic body;
