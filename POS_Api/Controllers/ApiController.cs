@@ -2067,7 +2067,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/add)")]
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productId?}/upc/add")]
         public dynamic AddUpc(string userId, string locId, string productId)
         {
             dynamic body;

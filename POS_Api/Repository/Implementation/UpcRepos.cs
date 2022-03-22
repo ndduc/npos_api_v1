@@ -223,7 +223,7 @@ namespace POS_Api.Repository.Implementation
                 Reader = Cmd.ExecuteReader();
                 while (Reader.Read())
                 {
-                    count = DbHelper.TryGet(Reader, "count");
+                    count = int.Parse(DbHelper.TryGet(Reader, "count"));
                 }
                 this.Conn.Close();
             }
