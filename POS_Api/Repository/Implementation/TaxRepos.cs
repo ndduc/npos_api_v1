@@ -182,6 +182,31 @@ namespace POS_Api.Repository.Implementation
             return CheckExistingHelper(id);
         }
 
+        public bool VerifyTaxProductRelation(string taxId, string productId, string locationId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_product_tax WHERE "
+                        + " `product_uid` = " + DbHelper.SetDBValue(productId, true) + " AND "
+                        + " `tax_uid` = " + DbHelper.SetDBValue(productId, true) + " AND "
+                        + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "id");
+                }
+                Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return CheckExistingHelper(id);
+        }
+
         public bool AddTaxProductRelationExecution(string productId, string locationId, string taxId, string userId)
         {
             int res = 0;
@@ -266,12 +291,19 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
-        public bool UpdateTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        public bool UpsertTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                exectutedList.Add(UpdateTaxProductRelationExecution(productId, locationId, item, userId));
+                if(VerifyTaxProductRelation(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateTaxProductRelationExecution(productId, locationId, item, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddTaxProductRelationExecution(productId, locationId, item, userId));
+                }
             }
 
             if (exectutedList.Contains(false))

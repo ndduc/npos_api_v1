@@ -286,12 +286,19 @@ namespace POS_Api.Repository.Implementation
             return CheckUpdateHelper(res);
         }
 
-        public bool UpdateSectionExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        public bool UpsertSectionExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                exectutedList.Add(UpdateSectionProductRelationExecution(item, productId, locationId, userId));
+                if (VerifySectionProductRelationExist(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateSectionProductRelationExecution(item, productId, locationId, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddSectionProductRelationExecution(item, productId, locationId, userId));
+                }
             }
 
             if (exectutedList.Contains(false))

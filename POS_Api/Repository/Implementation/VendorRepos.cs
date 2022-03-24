@@ -217,12 +217,19 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
-        public bool UpdateVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        public bool UpsertVendorExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                exectutedList.Add(UpdateVendorProductRelationExecution(item, productId, locationId, userId));
+                if( VerifyVendorProductRelationExist(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateVendorProductRelationExecution(item, productId, locationId, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddVendorProductRelationExecution(item, productId, locationId, userId));
+                }
             }
 
             if (exectutedList.Contains(false))

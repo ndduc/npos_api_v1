@@ -304,16 +304,16 @@ namespace POS_Api.Core.Implementation
                         checker = _departmentRepos.UpsertDepartmentExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "SECTION":
-                        checker = _sectionRepos.UpdateSectionExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _sectionRepos.UpsertSectionExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "VENDOR":
-                        checker = _vendorRepos.UpdateVendorExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _vendorRepos.UpsertVendorExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "TAX":
-                        checker = _taxRepos.UpdateTaxExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _taxRepos.UpsertTaxExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "DISCOUNT":
-                        checker = _discountRepos.UpdateDiscountExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _discountRepos.UpsertDiscountExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     default:
                         break;

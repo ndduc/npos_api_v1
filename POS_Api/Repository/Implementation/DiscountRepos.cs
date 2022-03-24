@@ -213,6 +213,31 @@ namespace POS_Api.Repository.Implementation
             return CheckExistingHelper(id);
         }
 
+        public bool VerifyDiscountProductRelation(string discountId, string productId, string locationId)
+        {
+            Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_product_discount WHERE "
+                        + " `product_uid` = " + DbHelper.SetDBValue(productId, true) + " AND "
+                        + " `discount_uid` = " + DbHelper.SetDBValue(discountId, true) + " AND "
+                        + " `location_uid` = " + DbHelper.SetDBValue(locationId, true) + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    id = DbHelper.TryGet(Reader, "id");
+                }
+                Conn.Close();
+            }
+            else
+            {
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return CheckExistingHelper(id);
+        }
+
         public bool AddDiscountProductRelationExecution(string productId, string locationId, string discountId, string userId)
         {
             int res = 0;
@@ -297,12 +322,19 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
-        public bool UpdateDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+        public bool UpsertDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                exectutedList.Add(UpdateDiscountProductRelationExecution(productId, locationId, item, userId));
+                if(VerifyDiscountProductRelation(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateDiscountProductRelationExecution(productId, locationId, item, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddDiscountProductRelationExecution(productId, locationId, item, userId));
+                }
             }
 
             if (exectutedList.Contains(false))

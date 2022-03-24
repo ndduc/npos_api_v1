@@ -11,10 +11,11 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUIdUnique(string uid);
         public bool VerifyUIdExist(string uid);
         public bool VerifyDiscountProductRelation(string productId, string locationId);
+        public bool VerifyDiscountProductRelation(string discountId, string productId, string locationId);
         public bool AddDiscountProductRelationExecution(string productId, string locationId, string discountId, string userId);
         public bool AddDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
-        public bool UpdateDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+        public bool UpsertDiscountExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
         public int GetDiscountPaginateCount(string locId);
 

@@ -10,12 +10,13 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUIdUnique(string uid);
         public bool VerifyUIdExist(string uid);
         public bool VerifyTaxProductRelation(string productId, string locationId);
+        public bool VerifyTaxProductRelation(string taxId, string productId, string locationId);
         public bool AddTaxProductRelationExecution(string productId, string locationId, string taxId, string userId);
         public bool UpdateTaxExecution(TaxModel model);
 
         public bool AddTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
-        public bool UpdateTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
+        public bool UpsertTaxExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId);
 
         public int GetTaxPaginateCount(string locId);
 
