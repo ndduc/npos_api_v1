@@ -586,11 +586,13 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("uid", out var Uid);
                 Request.Form.TryGetValue("itemCode", out var Code);
                 Request.Form.TryGetValue("upc", out var Upc);
+                Request.Form.TryGetValue("searchText", out var SearchText);
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "uid", Uid },
                     { "itemCode", Code },
-                    { "upc", Upc }
+                    { "upc", Upc },
+                    { "searchText", SearchText }
                 };
                 body = JsonSerializer.Serialize(_ProductLogic.GetProductById(userid, locid, dict));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);

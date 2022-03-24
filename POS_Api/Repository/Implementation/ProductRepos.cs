@@ -452,6 +452,7 @@ namespace POS_Api.Repository.Implementation
             param.TryGetValue("uid", out string uid);
             param.TryGetValue("itemCode", out string itemCode);
             param.TryGetValue("upc", out string upc);
+            param.TryGetValue("searchText", out string searchText);
             string whereClause;
             if (uid != null)
             {
@@ -461,6 +462,9 @@ namespace POS_Api.Repository.Implementation
             {
                 whereClause = " INNER JOIN REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
                                 + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.item_code = " + DbHelper.SetDBValue(itemCode, true) + " ";
+            } else if (searchText != null)
+            {
+                whereClause = " WHERE AP.description like '%" + searchText + "%'";
             }
             else if (upc != null)
             {
