@@ -7,6 +7,7 @@ namespace POS_Api.Repository.Interface
     {
         public bool AddVendorProductRelationExecution(string uid, string productId, string locationId, string userId);
         public bool VerifyVendorProductRelationExist(string uid, string productId, string locationId);
+        public bool VerifyVendorProductRelationExist(string productId, string locationId);
         public bool VerifyUIdUnique(string uid);
         public bool VerifyUIdExist(string uid);
         public bool AddVendorExecution(VendorModel model);
