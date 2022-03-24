@@ -140,7 +140,7 @@ namespace POS_Api.Repository.Implementation
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                if (VerifyCategoryProductRelationExist(item, productId, locationId))
+                if (VerifyCategoryProductRelationExist(productId, locationId))
                 {
                     exectutedList.Add(UpdateCategoryProductRelationExecution(item, productId, locationId, userId));
                 }

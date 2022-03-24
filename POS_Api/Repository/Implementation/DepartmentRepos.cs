@@ -108,7 +108,7 @@ namespace POS_Api.Repository.Implementation
             List<bool> exectutedList = new List<bool>();
             foreach (string item in deptIdlist)
             {
-                if (VerifyDepartmentProductRelationExist(item, productId, locationId))
+                if (VerifyDepartmentProductRelationExist(productId, locationId))
                 {
                     exectutedList.Add(UpdateDepartmentProductRelationExecution(item, productId, locationId, userId));
                 }
@@ -257,6 +257,39 @@ namespace POS_Api.Repository.Implementation
                             + " product_uid = " + DbHelper.SetDBValue(productId, true) + " AND "
                             + " location_uid = " + DbHelper.SetDBValue(locationId, true) + " AND "
                             + " department_uid = " + DbHelper.SetDBValue(uid, true) + " ; ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        id = DbHelper.TryGet(Reader, "id");
+                    }
+                    this.Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return CheckExistingHelper(id);
+        }
+
+        public bool VerifyDepartmentProductRelationExist(string productId, string locationId)
+        {
+            this.Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_location_product_department "
+                            + " WHERE "
+                            + " product_uid = " + DbHelper.SetDBValue(productId, true) + " AND "
+                            + " location_uid = " + DbHelper.SetDBValue(locationId, true) + " ; ";
             try
             {
                 if (Conn.IsConnect())
