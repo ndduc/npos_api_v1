@@ -575,9 +575,15 @@ namespace POS_Api.Core.Implementation
         {
             param.TryGetValue("locationId", out string locationId);
             param.TryGetValue("searchType", out string searchType);
+            param.TryGetValue("searchText", out string searchText);
             try
             {
-                return _productRepos.GetProductPaginateCount(locationId);
+                string whereClause = "";
+                if (!string.IsNullOrWhiteSpace(searchText) || searchText != "null")
+                {
+                    whereClause = " WHERE AL.description like '%" + searchText + "%'";
+                }
+                return _productRepos.GetProductPaginateCount(locationId, whereClause);
                 // Search Type indicate search by default (locId) or itemId, etc ...
             }
             catch (Exception e)
@@ -593,12 +599,21 @@ namespace POS_Api.Core.Implementation
             param.TryGetValue("itemCode", out string itemCode);
             param.TryGetValue("startIdx", out string startIdx);
             param.TryGetValue("endIdx", out string endIdx);
+            param.TryGetValue("searchText", out var searchText);
 
             try
             {
+
+                string whereClause = "";
+                if (!string.IsNullOrWhiteSpace(searchText))
+                {
+                    whereClause = " WHERE AL.description like '%" + searchText + "%'";
+                }
+
+
                 if (locationId != null)
                 {
-                    return _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx));
+                    return _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx), whereClause);
                 }
                 else if (itemCode != null)
                 {

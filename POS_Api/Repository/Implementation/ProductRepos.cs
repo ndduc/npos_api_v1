@@ -71,14 +71,15 @@ namespace POS_Api.Repository.Implementation
 
         }
 
-        public int GetProductPaginateCount(string locId)
+        public int GetProductPaginateCount(string locId, string where)
         {
             this.Conn = new DBConnection();
             string query = "SELECT count(*) as count FROM asset_product AS AL"
               + " INNER JOIN ref_location_product AS RLP"
               + " ON AL.uid = RLP.product_uid"
               + " AND RLP.location_uid = "
-              + DbHelper.SetDBValue(locId, true)
+              + DbHelper.SetDBValue(locId, true) + " " 
+              + where
               + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC;";
             int count = 0;
             if (Conn.IsConnect())
@@ -99,7 +100,7 @@ namespace POS_Api.Repository.Implementation
             return count;
         }
 
-        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx)
+        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx, string where)
         {
             List<ProductModel> productList = new List<ProductModel>();
             this.Conn = new DBConnection();
@@ -107,7 +108,8 @@ namespace POS_Api.Repository.Implementation
                         + " INNER JOIN ref_location_product AS RLP"
                         + " ON AL.uid = RLP.product_uid"
                         + " AND RLP.location_uid = "
-                        + DbHelper.SetDBValue(locId, true)
+                        + DbHelper.SetDBValue(locId, true) + " "
+                        + where
                         + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
                         + "; ";
             if (Conn.IsConnect())
@@ -159,7 +161,6 @@ namespace POS_Api.Repository.Implementation
                             + " ON AP.uid = RLP.product_uid AND RLP.location_uid = " + DbHelper.SetDBValue(locationId, true)
                             + " " + where
                             + " LIMIT 1;";
-            Debug.WriteLine(query);
             try
             {
                 if (Conn.IsConnect())

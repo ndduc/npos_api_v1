@@ -28,7 +28,8 @@ namespace POS_Api.Repository.Interface
 
         public bool AddRelationUpc(string locationId, string productId, string userId, string upc);
 
-        public int GetProductPaginateCount(string locId);
-        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx);
+        public int GetProductPaginateCount(string locId, string where);
+        public IEnumerable<ProductModel> GetProductPaginateByDefault(string locId, int startIdx, int endIdx, string where);
     }
 }
+// context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));

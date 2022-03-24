@@ -618,11 +618,13 @@ namespace POS_Api.Controllers
                 // Pull Vendor By PId ...
 
                 Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("searchText", out var searchText);
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "locationId", locid},
                     { "searchType", searchType },
-                    { "userId", userid }
+                    { "userId", userid },
+                    { "searchText", searchText}
                 };
                 body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginateCount(dict));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
@@ -650,13 +652,15 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("searchType", out var searchType);
                 Request.Form.TryGetValue("startIdx", out var startIdx);
                 Request.Form.TryGetValue("endIdx", out var endIdx);
+                Request.Form.TryGetValue("searchText", out var searchText);
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "locationId", locid},
                     { "searchType", searchType },
                     { "userId", userid },
                     { "startIdx", startIdx },
-                    { "endIdx", endIdx }
+                    { "endIdx", endIdx },
+                    { "searchText", searchText}
                 };
                 body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginate(dict));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
