@@ -288,8 +288,9 @@ namespace POS_Api.Core.Implementation
             return checker;
         }
 
-        private bool UpdateProductFunctionHelper(List<string> valueList, string productId, string userId, string locationId, string option)
+        private bool UpsertProductFunctionHelper(List<string> valueList, string productId, string userId, string locationId, string option)
         {
+            // note: logically speaking, each product should only have attribute per option
             bool checker = false;
 
             if (valueList.Count > 0)
@@ -297,10 +298,10 @@ namespace POS_Api.Core.Implementation
                 switch (option)
                 {
                     case "CATEGORY":
-                        checker = _categoryRepos.UpdateCategoryExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _categoryRepos.UpsertCategoryExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "DEPARTMENT":
-                        checker = _departmentRepos.UpdateDepartmentExecutionFromList(valueList, productId, locationId, userId);
+                        checker = _departmentRepos.UpsertDepartmentExecutionFromList(valueList, productId, locationId, userId);
                         break;
                     case "SECTION":
                         checker = _sectionRepos.UpdateSectionExecutionFromList(valueList, productId, locationId, userId);
@@ -421,12 +422,12 @@ namespace POS_Api.Core.Implementation
             if (isSucess)
             {
                 bool isProductLocationRelationSucess = _productRepos.UpdateProductExecutionRelation(model, model.LocationUId);
-                bool isDepartmentSucess = UpdateProductFunctionHelper(deptList, model.UId, model.UserUId, model.LocationUId, "DEPARTMENT");
-                bool isCategorySucess = UpdateProductFunctionHelper(cateList, model.UId, model.UserUId, model.LocationUId, "CATEGORY");
-                bool isVendorSucess = UpdateProductFunctionHelper(venList, model.UId, model.UserUId, model.LocationUId, "VENDOR");
-                bool isSectionSucess = UpdateProductFunctionHelper(secList, model.UId, model.UserUId, model.LocationUId, "SECTION");
-                bool isTaxSucess = UpdateProductFunctionHelper(taxList, model.UId, model.UserUId, model.LocationUId, "TAX");
-                bool isDiscountSucess = UpdateProductFunctionHelper(discountList, model.UId, model.UserUId, model.LocationUId, "DISCOUNT");
+                bool isDepartmentSucess = UpsertProductFunctionHelper(deptList, model.UId, model.UserUId, model.LocationUId, "DEPARTMENT");
+                bool isCategorySucess = UpsertProductFunctionHelper(cateList, model.UId, model.UserUId, model.LocationUId, "CATEGORY");
+                bool isVendorSucess = UpsertProductFunctionHelper(venList, model.UId, model.UserUId, model.LocationUId, "VENDOR");
+                bool isSectionSucess = UpsertProductFunctionHelper(secList, model.UId, model.UserUId, model.LocationUId, "SECTION");
+                bool isTaxSucess = UpsertProductFunctionHelper(taxList, model.UId, model.UserUId, model.LocationUId, "TAX");
+                bool isDiscountSucess = UpsertProductFunctionHelper(discountList, model.UId, model.UserUId, model.LocationUId, "DISCOUNT");
 
                 #region SET RESPONSE MODEL
                 if (isProductLocationRelationSucess)

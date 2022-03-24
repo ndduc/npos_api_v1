@@ -15,7 +15,7 @@ namespace POS_Api.Repository.Interface
 
         public bool AddDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId);
 
-        public bool UpdateDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId);
+        public bool UpsertDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId);
 
 
         public int GetDepartmentPaginateCount(string locId);

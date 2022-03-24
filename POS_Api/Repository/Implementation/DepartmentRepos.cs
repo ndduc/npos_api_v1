@@ -103,12 +103,19 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
-        public bool UpdateDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId)
+        public bool UpsertDepartmentExecutionFromList(List<string> deptIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in deptIdlist)
             {
-                exectutedList.Add(UpdateDepartmentProductRelationExecution(item, productId, locationId, userId));
+                if (VerifyDepartmentProductRelationExist(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateDepartmentProductRelationExecution(item, productId, locationId, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddDepartmentProductRelationExecution(item, productId, locationId, userId));
+                }
             }
 
             if (exectutedList.Contains(false))
