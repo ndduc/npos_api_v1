@@ -113,6 +113,39 @@ namespace POS_Api.Repository.Implementation
             return CheckExistingHelper(id);
         }
 
+        public bool VerifySectionProductRelationExist(string productId, string locationId)
+        {
+            this.Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_location_product_Section "
+                            + " WHERE "
+                            + " product_uid = " + DbHelper.SetDBValue(productId, true) + " AND "
+                            + " location_uid = " + DbHelper.SetDBValue(locationId, true) + " ; ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        id = DbHelper.TryGet(Reader, "id");
+                    }
+                    this.Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return CheckExistingHelper(id);
+        }
+
         public bool VerifyUIdUnique(string uid)
         {
             this.Conn = new DBConnection();
@@ -291,7 +324,7 @@ namespace POS_Api.Repository.Implementation
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                if (VerifySectionProductRelationExist(item, productId, locationId))
+                if (VerifySectionProductRelationExist(productId, locationId))
                 {
                     exectutedList.Add(UpdateSectionProductRelationExecution(item, productId, locationId, userId));
                 }
