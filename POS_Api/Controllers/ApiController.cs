@@ -460,7 +460,6 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/product/update")]
         public dynamic UpdateProduct(string userid, string locid)
         {
-            Debug.WriteLine("USER ID\t\t" + userid);
             dynamic body;
             try
             {

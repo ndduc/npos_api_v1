@@ -250,7 +250,7 @@ namespace POS_Api.Repository.Implementation
         {
             int res = 0;
             Conn = new DBConnection();
-            string query = " UPDATE  ref_location_discount"
+            string query = " UPDATE  ref_product_discount"
                             + " SET "
                             + " `discount_uid` = " + DbHelper.SetDBValue(discountId, false)
                             + " `updated_by` = " + DbHelper.SetDBValue(userId, true)

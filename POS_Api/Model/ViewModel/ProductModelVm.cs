@@ -21,6 +21,8 @@ namespace POS_Api.Model.ViewModel
 
         public List<string> ItemCodeList { get; set; }
 
+        public List<string> UpcList { get; set; }
+
         public List<CategoryModel> CategoryList { get; set; }
         public List<DepartmentModel> DepartmentList { get; set; }
         public List<SectionModel> SectionList { get; set; }
@@ -45,6 +47,7 @@ namespace POS_Api.Model.ViewModel
             IsError = model.IsError;
             Error = model.Error;
             ItemCodeList = model.ItemCodeList;
+            UpcList = model.UpcList;
         }
     }
 }

@@ -199,7 +199,7 @@ namespace POS_Api.Repository.Implementation
             {
                 List<string> itemCodeList = GetProductItemCode(locationId, model.UId);
                 model.ItemCodeList = itemCodeList;
-                List<string> upcList = new List<string>();
+                List<string> upcList = GetProductUpc(locationId, model.UId);
                 model.UpcList = upcList;
                 return model;
             }
@@ -241,6 +241,40 @@ namespace POS_Api.Repository.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
             }
             return listItemCode;
+        }
+
+        public List<string> GetProductUpc(string locationId, string productId)
+        {
+            List<string> listUpc= new List<string>();
+            Conn = new DBConnection();
+            string query = "SELECT RLPI.upc FROM REF_LOCATION_PRODUCT_UPC AS RLPI "
+                          + " WHERE product_uid = " + DbHelper.SetDBValue(productId, true)
+                          + " AND location_uid = " + DbHelper.SetDBValue(locationId, true)
+                          + " ;";
+            Debug.WriteLine(query);
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        string upc = DbHelper.TryGet(Reader, "upc");
+                        listUpc.Add(upc);
+                    }
+                    Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return listUpc;
         }
 
         public bool VerifyUIdUnique(string uid)
@@ -453,13 +487,15 @@ namespace POS_Api.Repository.Implementation
                 List<TaxModel> taxList = GetProductTaxList(model.UId, locationId);
                 List<DiscountModel> discList = GetProductDiscountList(model.UId, locationId);
 
-                ProductModelVm viewModel = new ProductModelVm(model);
-                viewModel.CategoryList = cateList;
-                viewModel.DepartmentList = deptList;
-                viewModel.SectionList = secList;
-                viewModel.VendorList = venList;
-                viewModel.TaxList = taxList;
-                viewModel.DiscountList = discList;
+                ProductModelVm viewModel = new ProductModelVm(model)
+                {
+                    CategoryList = cateList,
+                    DepartmentList = deptList,
+                    SectionList = secList,
+                    VendorList = venList,
+                    TaxList = taxList,
+                    DiscountList = discList
+                };
 
                 return viewModel;
             }

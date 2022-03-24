@@ -8,6 +8,7 @@ namespace POS_Api.Repository.Interface
         public IEnumerable<ProductModel> GetProductByLocationExecution(string locId);
         public ProductModel GetProductByIdExecution(string locationId, string where);
         public List<string> GetProductItemCode(string locationId, string productId);
+        public List<string> GetProductUpc(string locationId, string productId);
         public bool VerifyUIdUnique(string uid);
         public bool VerifyUIdExist(string uid);
         public bool AddProductExecution(ProductModel model);
