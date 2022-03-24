@@ -10,6 +10,7 @@ namespace POS_Api.Repository.Interface
         public bool AddCategoryExecution(CategoryModel model);
         public bool AddCategoryProductRelationExecution(string uid, string productId, string locationId, string userId);
         public bool VerifyCategoryProductRelationExist(string uid, string productId, string locationId);
+        public bool VerifyCategoryProductRelationExist(string productId, string locationId);
         public bool VerifyUIdUnique(string uid);
         public bool VerifyUIdExist(string uid);
 

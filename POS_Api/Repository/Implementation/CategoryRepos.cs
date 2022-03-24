@@ -134,12 +134,20 @@ namespace POS_Api.Repository.Implementation
             return CheckInsertionHelper(res);
         }
 
-        public bool UpdateCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
+
+        public bool UpsertCategoryExecutionFromList(List<string> itemIdlist, string productId, string locationId, string userId)
         {
             List<bool> exectutedList = new List<bool>();
             foreach (string item in itemIdlist)
             {
-                exectutedList.Add(UpdateCategoryProductRelationExecution(item, productId, locationId, userId));
+                if (VerifyCategoryProductRelationExist(item, productId, locationId))
+                {
+                    exectutedList.Add(UpdateCategoryProductRelationExecution(item, productId, locationId, userId));
+                }
+                else
+                {
+                    exectutedList.Add(AddCategoryProductRelationExecution(item, productId, locationId, userId));
+                }
             }
 
             if (exectutedList.Contains(false))
@@ -236,6 +244,38 @@ namespace POS_Api.Repository.Implementation
             return CheckInsertionHelper(res);
         }
 
+        public bool VerifyCategoryProductRelationExist(string productId, string locationId)
+        {
+            this.Conn = new DBConnection();
+            string id = null;
+            string query = " SELECT id FROM ref_location_product_category "
+                            + " WHERE "
+                            + " product_uid = " + DbHelper.SetDBValue(productId, true) + " AND "
+                            + " location_uid = " + DbHelper.SetDBValue(locationId, true) + " ; ";
+            try
+            {
+                if (Conn.IsConnect())
+                {
+                    Cmd = new MySqlCommand(query, this.Conn.Connection);
+                    Reader = Cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        id = DbHelper.TryGet(Reader, "id");
+                    }
+                    this.Conn.Close();
+                }
+                else
+                {
+                    throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
+            }
+            return CheckExistingHelper(id);
+        }
 
         public bool VerifyCategoryProductRelationExist(string uid, string productId, string locationId)
         {
