@@ -2085,7 +2085,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/remove)")]
+        [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/remove")]
         public dynamic RemoveUpc(string userId, string locId, string productId)
         {
             dynamic body;

@@ -256,6 +256,7 @@ namespace POS_Api.Repository.Implementation
                 {
                     UpcModel model = new UpcModel()
                     {
+                        Id = DbHelper.TryGet(Reader, "id"),
                         ProductUid = DbHelper.TryGet(Reader, "product_uid"),
                         LocationUid = DbHelper.TryGet(Reader, "location_uid"),
                         Upc = DbHelper.TryGet(Reader, "upc"),
