@@ -75,12 +75,24 @@ namespace POS_Api.Repository.Implementation
         {
             this.Conn = new DBConnection();
             string query = "SELECT count(*) as count FROM asset_product AS AL"
-              + " INNER JOIN ref_location_product AS RLP"
-              + " ON AL.uid = RLP.product_uid"
-              + " AND RLP.location_uid = "
-              + DbHelper.SetDBValue(locId, true) + " " 
-              + where
-              + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC;";
+                + " INNER JOIN ref_location_product AS RLP"
+                + " ON AL.uid = RLP.product_uid"
+                + " AND RLP.location_uid = "
+                + DbHelper.SetDBValue(locId, true) + " "
+                + " LEFT JOIN "
+                + " ( "
+                + " SELECT RLPI.product_uid, GROUP_CONCAT(RLPI.item_code) as item_code FROM ref_location_product_itemcode as RLPI "
+                + " GROUP BY RLPI.product_uid "
+                + " ) AS ITEM_CODE "
+                + " ON AL.uid = ITEM_CODE.product_uid "
+                + " LEFT JOIN "
+                + " ( "
+                + " SELECT RLPU.product_uid, GROUP_CONCAT(RLPU.upc) as upc FROM ref_location_product_upc as RLPU "
+                + " GROUP BY RLPU.product_uid "
+                + " ) AS UPC "
+                + " ON AL.uid = UPC.product_uid "
+                + where
+                + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC;";
             int count = 0;
             if (Conn.IsConnect())
             {
@@ -90,13 +102,13 @@ namespace POS_Api.Repository.Implementation
                 {
                     count = int.Parse(DbHelper.TryGet(Reader, "count"));
                 }
-                this.Conn.Close();
+                Conn.Close();
             }
             else
             {
+                Conn.Close();
                 throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
             }
-
             return count;
         }
 
@@ -109,6 +121,18 @@ namespace POS_Api.Repository.Implementation
                         + " ON AL.uid = RLP.product_uid"
                         + " AND RLP.location_uid = "
                         + DbHelper.SetDBValue(locId, true) + " "
+                        + " LEFT JOIN "
+                        + " ( "
+                        + " SELECT RLPI.product_uid, GROUP_CONCAT(RLPI.item_code) as item_code FROM ref_location_product_itemcode as RLPI "
+                        + " GROUP BY RLPI.product_uid "
+                        + " ) AS ITEM_CODE "
+                        + " ON AL.uid = ITEM_CODE.product_uid "
+                        + " LEFT JOIN "
+                        + " ( "
+                        + " SELECT RLPU.product_uid, GROUP_CONCAT(RLPU.upc) as upc FROM ref_location_product_upc as RLPU "
+                        + " GROUP BY RLPU.product_uid "
+                        + " ) AS UPC "
+                        + " ON AL.uid = UPC.product_uid "
                         + where
                         + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
                         + "; ";
@@ -135,18 +159,12 @@ namespace POS_Api.Repository.Implementation
                     };
                     productList.Add(model);
                 }
-                this.Conn.Close();
-                if (productList.Count > 0)
-                {
-                    return productList;
-                }
-                else
-                {
-                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
-                }
+                Conn.Close();
+                return productList;
             }
             else
             {
+                Conn.Close();
                 throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
             }
         }
@@ -206,7 +224,7 @@ namespace POS_Api.Repository.Implementation
             }
             else
             {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Record Found"));
+                return null;
             }
         }
 
@@ -455,21 +473,24 @@ namespace POS_Api.Repository.Implementation
             param.TryGetValue("upc", out string upc);
             param.TryGetValue("searchText", out string searchText);
             string whereClause;
-            if (uid != null)
+            if (!string.IsNullOrWhiteSpace(uid))
             {
                 whereClause = " WHERE AP.uid = " + DbHelper.SetDBValue(uid, true) + " ";
             }
-            else if (itemCode != null)
+            else if (!string.IsNullOrWhiteSpace(itemCode))
             {
                 whereClause = " INNER JOIN REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
                                 + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.item_code = " + DbHelper.SetDBValue(itemCode, true) + " ";
-            } else if (searchText != null)
+            } else if (!string.IsNullOrWhiteSpace(searchText))
             {
-                whereClause = " WHERE AP.description like '%" + searchText + "%'";
+                //whereClause = " WHERE AP.description = '" + searchText + "'";
+                whereClause = " WHERE 1 = 0";
+
             }
-            else if (upc != null)
+            else if (!string.IsNullOrWhiteSpace(upc))
             {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Not Implemented"));
+                whereClause = " INNER JOIN REF_LOCATION_PRODUCT_UPC AS RLPI "
+                                 + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.upc = " + DbHelper.SetDBValue(upc, true) + " ";
             }
             else
             {
@@ -482,7 +503,7 @@ namespace POS_Api.Repository.Implementation
 
                 if (model == null)
                 {
-                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "No Product Record Found"));
+                    return null;
                 }
 
                 List<CategoryModel> cateList = GetProductCategoryList(model.UId, locationId);

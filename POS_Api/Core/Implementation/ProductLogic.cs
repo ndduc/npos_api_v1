@@ -7,6 +7,7 @@ using POS_Api.Repository.Interface;
 using POS_Api.Shared.ExceptionHelper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 
@@ -574,14 +575,27 @@ namespace POS_Api.Core.Implementation
         public int GetProductPaginateCount(Dictionary<string, string> param)
         {
             param.TryGetValue("locationId", out string locationId);
-            param.TryGetValue("searchType", out string searchType);
             param.TryGetValue("searchText", out string searchText);
+            param.TryGetValue("uid", out string uid);
+            param.TryGetValue("upc", out string upc);
+            param.TryGetValue("itemCode", out string itemCode);
             try
             {
                 string whereClause = "";
-                if (!string.IsNullOrWhiteSpace(searchText) || searchText != "null")
+                if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     whereClause = " WHERE AL.description like '%" + searchText + "%'";
+                } else if (!string.IsNullOrWhiteSpace(uid))
+                {
+                    whereClause = " WHERE AL.uid like '%" + uid + "%'";
+                }
+                else if (!string.IsNullOrWhiteSpace(itemCode))
+                {
+                    whereClause = " WHERE ITEM_CODE.item_code like '%" + itemCode + "%'";
+                }
+                else if (!string.IsNullOrWhiteSpace(upc))
+                {
+                    whereClause = " WHERE UPC.upc like '%" + upc + "%'";
                 }
                 return _productRepos.GetProductPaginateCount(locationId, whereClause);
                 // Search Type indicate search by default (locId) or itemId, etc ...
@@ -596,11 +610,12 @@ namespace POS_Api.Core.Implementation
         {
 
             param.TryGetValue("locationId", out string locationId);
-            param.TryGetValue("itemCode", out string itemCode);
             param.TryGetValue("startIdx", out string startIdx);
             param.TryGetValue("endIdx", out string endIdx);
             param.TryGetValue("searchText", out var searchText);
-
+            param.TryGetValue("uid", out string uid);
+            param.TryGetValue("upc", out string upc);
+            param.TryGetValue("itemCode", out string itemCode);
             try
             {
 
@@ -609,18 +624,25 @@ namespace POS_Api.Core.Implementation
                 {
                     whereClause = " WHERE AL.description like '%" + searchText + "%'";
                 }
+                else if (!string.IsNullOrWhiteSpace(uid))
+                {
+                    whereClause = " WHERE AL.uid like '%" + uid + "%'";
+                }
+                else if (!string.IsNullOrWhiteSpace(itemCode))
+                {
+                    whereClause = " WHERE ITEM_CODE.item_code like '%" + itemCode + "%'";
+                }
+                else if (!string.IsNullOrWhiteSpace(upc))
+                {
+                    whereClause = " WHERE UPC.upc like '%" + upc + "%'";
+                }
 
 
                 if (locationId != null)
                 {
-                    return _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx), whereClause);
-                }
-                else if (itemCode != null)
-                {
-                    // add repos call the get product by item here
-                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "To Be Implemented"));
-                }
-                else
+                    var list = _productRepos.GetProductPaginateByDefault(locationId, int.Parse(startIdx), int.Parse(endIdx), whereClause);
+                    return list;
+                } else
                 {
                     throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
                 }

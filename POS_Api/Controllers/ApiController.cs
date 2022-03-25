@@ -617,14 +617,18 @@ namespace POS_Api.Controllers
                 // Pull Section By PId ...
                 // Pull Vendor By PId ...
 
-                Request.Form.TryGetValue("searchType", out var searchType);
                 Request.Form.TryGetValue("searchText", out var searchText);
+                Request.Form.TryGetValue("uid", out var uid);
+                Request.Form.TryGetValue("upc", out var upc);
+                Request.Form.TryGetValue("itemCode", out var itemCode);
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "locationId", locid},
-                    { "searchType", searchType },
                     { "userId", userid },
-                    { "searchText", searchText}
+                    { "searchText", searchText},
+                    { "uid", uid},
+                    { "upc", upc},
+                    { "itemCode", itemCode}
                 };
                 body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginateCount(dict));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
@@ -649,18 +653,22 @@ namespace POS_Api.Controllers
                 // Pull Section By PId ...
                 // Pull Vendor By PId ...
 
-                Request.Form.TryGetValue("searchType", out var searchType);
                 Request.Form.TryGetValue("startIdx", out var startIdx);
                 Request.Form.TryGetValue("endIdx", out var endIdx);
                 Request.Form.TryGetValue("searchText", out var searchText);
+                Request.Form.TryGetValue("uid", out var uid);
+                Request.Form.TryGetValue("upc", out var upc);
+                Request.Form.TryGetValue("itemCode", out var itemCode);
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "locationId", locid},
-                    { "searchType", searchType },
                     { "userId", userid },
                     { "startIdx", startIdx },
                     { "endIdx", endIdx },
-                    { "searchText", searchText}
+                    { "searchText", searchText},
+                    { "uid", uid},
+                    { "upc", upc},
+                    { "itemCode", itemCode}
                 };
                 body = JsonSerializer.Serialize(_ProductLogic.GetProductPaginate(dict));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
