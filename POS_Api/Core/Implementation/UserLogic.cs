@@ -5,6 +5,8 @@ using POS_Api.Repository.Interface;
 using POS_Api.Shared.ExceptionHelper;
 using POS_Api.Shared.Security;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace POS_Api.Core.Implementation
 {
@@ -106,6 +108,35 @@ namespace POS_Api.Core.Implementation
         public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason)
         {
             return _userRepos.AddRelationLocationUser(muserId, userId, locationId, reason);
+        }
+
+        public dynamic GetUserPagination(string userId, string locId, Dictionary<string, string> param)
+        {
+            bool isUserValid = _userRepos.VerifyUser(userId);
+            if (isUserValid)
+            {
+                param.TryGetValue("startIdx", out string startIdx);
+                param.TryGetValue("endIdx", out string endIdx);
+                param.TryGetValue("userFullName", out string userFullName);
+
+                string whereClause = "";
+                if (!string.IsNullOrWhiteSpace(userFullName))
+                {
+                    whereClause = "";
+                }
+
+                if (!string.IsNullOrWhiteSpace(locId))
+                {
+                    return null;
+                } else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+                }
+
+            } else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "unauthorized access"));
+            }
         }
     }
 }

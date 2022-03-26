@@ -6,6 +6,7 @@ using POS_Api.Shared.DbHelper;
 using POS_Api.Shared.ExceptionHelper;
 using POS_Api.Shared.Security;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 
@@ -279,6 +280,87 @@ namespace POS_Api.Repository.Implementation
                 throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
             }
             return CheckExistingHelper(id);
+        }
+
+        public int GetUserPaginationCount(string locationId, string whereClause)
+        {
+            Conn = new DBConnection();
+            string query = " SELECT count(*) as count "
+                        + " FROM asset_user as AU "
+                        + " INNER JOIN "
+                        + " ( "
+                        + " SELECT RLU.user_uid, "
+                        + " group_concat(RLU.location_uid) as location_uid,  "
+                        + " group_concat(RLU.relation_reason) as relation_reason,  "
+                        + " group_concat(AL.`name`) as `location_name`  "
+                        + " FROM ref_location_user as RLU "
+                        + " INNER JOIN asset_location as AL "
+                        + " ON RLU.location_uid = AL.uid "
+                        + " GROUP BY RLU.user_uid "
+                        + " ) as LOCATION "
+                        + " ON AU.uid = LOCATION.user_uid"
+                        + " AND LOCATION.location_uid LIKE '%"
+                        + locationId
+                        + "%' "
+                        + whereClause;
+            int count = 0;
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    count = int.Parse(DbHelper.TryGet(Reader, "count"));
+                }
+                Conn.Close();
+            }
+            else
+            {
+                Conn.Close();
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+            return count;
+        }
+
+        public dynamic GetUserPagination(string locationId, string whereClause)
+        {
+            Conn = new DBConnection();
+            List<dynamic> userList = new List<dynamic>();
+            string query = " SELECT  AU.*, LOCATION.* "
+                        + " FROM asset_user as AU "
+                        + " INNER JOIN "
+                        + " ( "
+                        + " SELECT RLU.user_uid, "
+                        + " group_concat(RLU.location_uid) as location_uid,  "
+                        + " group_concat(RLU.relation_reason) as relation_reason,  "
+                        + " group_concat(AL.`name`) as `location_name`  "
+                        + " FROM ref_location_user as RLU "
+                        + " INNER JOIN asset_location as AL "
+                        + " ON RLU.location_uid = AL.uid "
+                        + " GROUP BY RLU.user_uid "
+                        + " ) as LOCATION "
+                        + " ON AU.uid = LOCATION.user_uid"
+                        + " AND LOCATION.location_uid LIKE '%"
+                        + locationId
+                        + "%' "
+                        + whereClause;
+   
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    
+                }
+                Conn.Close();
+                return userList;
+            }
+            else
+            {
+                Conn.Close();
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
         }
 
         public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason)

@@ -191,6 +191,30 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost("pos/{userid?}/{locid?}/user/get-user-pagination")]
+        public ObjectResult GetUserPaginate(string userid, string locid) {
+            string body;
+            try
+            {
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Request.Form.TryGetValue("userFullName", out var userFullName);
+
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx },
+                    { "userFullName", userFullName}
+                };
+                body = JsonSerializer.Serialize(_UserLogic.GetUserPagination(userid, locid, dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
 
         [HttpPost("pos/{userid?}/update/info")]
         public ObjectResult UpdateUserInfo(string userid)
