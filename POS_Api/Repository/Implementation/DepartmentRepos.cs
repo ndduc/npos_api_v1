@@ -25,7 +25,6 @@ namespace POS_Api.Repository.Implementation
                         + " WHERE "
                         + " uid = " + DbHelper.SetDBValue(model.UId, true) + " AND "
                         + " location_uid = " + DbHelper.SetDBValue(model.LocationUId, true) + "";
-            Debug.WriteLine(query);
             try
             {
                 if (Conn.IsConnect())

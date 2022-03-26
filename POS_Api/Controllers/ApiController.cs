@@ -54,7 +54,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/user/authorize")]
         public ObjectResult GetUserByPassAndUserName()
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("user", out var u);
@@ -94,7 +94,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/user/register")]
         public ObjectResult RegisterNewUser()
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -142,7 +142,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/{userid?}/{locaid?}/user/register")]
         public ObjectResult RegisterNewUserByParent(string userid, string locaid)
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -195,7 +195,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/{userid?}/update/info")]
         public ObjectResult UpdateUserInfo(string userid)
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -244,7 +244,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/{userid}/update/pass")]
         public ObjectResult UpdateUserPassword(string userid)
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -284,7 +284,7 @@ namespace POS_Api.Controllers
         [HttpPost("pos/{muserid?}/assign/location/{userid?}/{locaid?}")]
         public ObjectResult UpdateUserLocation(string muserid, string userid, string locaid)
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -323,7 +323,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/location/register")]
         public ObjectResult RegisterNewLocation(string userid)
         {
-            dynamic body;
+            string body;
             bool isSuccess;
             try
             {
@@ -374,8 +374,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/location")]
         public ObjectResult GetLocationById(string userid)
         {
-            Debug.WriteLine("USER ID\t\t" + userid);
-            dynamic body;
+            string body;
             try
             {
                 if (userid == null || userid.Length < 5)
@@ -401,8 +400,7 @@ namespace POS_Api.Controllers
         //https://stackoverflow.com/questions/33711629/incorrect-content-type-exception-throws-angular-mvc-6-application
         public ObjectResult AddProduct(string userid, string locid)
         {
-            dynamic body;
-            bool isSucess = false;
+            string body;
             try
             {
                 Request.Form.TryGetValue("description", out var Desc);
@@ -460,7 +458,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/product/update")]
         public ObjectResult UpdateProduct(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("uid", out var Uid);
@@ -519,8 +517,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/product/get-by-id")]
         public ObjectResult GetProductByLocationId(string userid, string locid)
         {
-            Debug.WriteLine("USER ID\t\t" + userid);
-            dynamic body;
+            string body;
             try
             {
                 if (userid == null || userid.Length < 36 || locid == null || locid.Length < 36)
@@ -545,7 +542,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/{productId?}/product/itemcode")]
         public ObjectResult AddProductItemCode(string userid, string locid, string productId)
         {
-            dynamic body;
+            string body;
             bool isSucess;
             Request.Form.TryGetValue("itemcode", out var ItemCode);
             try
@@ -573,7 +570,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/product/get-by-map")]
         public ObjectResult GetProductByParamMap(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -607,7 +604,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/product/get-count")]
         public ObjectResult GetProductCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -643,7 +640,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/product/get-product-paginate")]
         public ObjectResult GetProductForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -686,7 +683,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/add")]
         public ObjectResult AddCategory(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -716,7 +713,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/update")]
         public ObjectResult UpdateCategory(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("id", out var Id);
@@ -750,7 +747,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/relation-add")]
         public ObjectResult AddCategoryProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("categoryId", out var categoryId);
@@ -777,7 +774,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/category/get")]
         public ObjectResult GetCategoryByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _categoryLogic.GetCategoryByLocationId(userid, locid);
@@ -793,7 +790,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/get-count")]
         public ObjectResult GetCategoryCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -823,7 +820,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/get-category-paginate")]
         public ObjectResult GetCategoryForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -857,7 +854,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/category/{categoryId?}")]
         public ObjectResult GetCategoryById(string userid, string locid, string categoryId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_categoryLogic.GetCategoryById(userid, locid, categoryId));
@@ -873,7 +870,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/category/get-by-description")]
         public ObjectResult GetCategoryByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -894,7 +891,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/add")]
         public ObjectResult AddDepartment(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -926,7 +923,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/update")]
         public ObjectResult UpdateDepartment(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("id", out var Id);
@@ -960,7 +957,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/relation-add")]
         public ObjectResult AddDepartmentProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("departmentId", out var departmentId);
@@ -988,7 +985,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/department/get")]
         public ObjectResult GetDepartmentByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _departmentLogic.GetDepartmentByLocationId(userid, locid);
@@ -1004,7 +1001,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/get-count")]
         public ObjectResult GetDepartmentCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1034,7 +1031,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/get-department-paginate")]
         public ObjectResult GetDepartmentForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1068,7 +1065,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/department/{departmentId?}")]
         public ObjectResult GetDepartmentById(string userid, string locid, string departmentId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_departmentLogic.GetDepartmentById(userid, locid, departmentId));
@@ -1084,7 +1081,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/department/get-by-description")]
         public ObjectResult GetDepartmentByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -1104,7 +1101,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/add")]
         public ObjectResult AddDiscount(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1136,7 +1133,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/update")]
         public ObjectResult UpdateDiscount(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1172,7 +1169,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/discount/get")]
         public ObjectResult GetDiscountByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _discountLogic.GetDiscountByLocationId(userid, locid);
@@ -1188,7 +1185,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/relation-add")]
         public ObjectResult AddDiscountProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("discountId", out var discountId);
@@ -1215,7 +1212,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-count")]
         public ObjectResult GetDiscountCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1245,7 +1242,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-discount-paginate")]
         public ObjectResult GetDiscountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1279,7 +1276,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/discount/{discountId?}")]
         public ObjectResult GetDiscountById(string userid, string locid, string discountId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_discountLogic.GetDiscountById(userid, locid, discountId));
@@ -1295,7 +1292,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/discount/get-by-description")]
         public ObjectResult GetDiscountByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -1315,7 +1312,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/add")]
         public ObjectResult AddSection(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1345,7 +1342,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/add")]
         public ObjectResult UpdateSection(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1379,7 +1376,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/relation-add")]
         public ObjectResult AddSectionProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("productId", out var productId);
@@ -1407,7 +1404,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/section/get")]
         public ObjectResult GetSectionByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _sectionLogic.GetSectionByLocationId(userid, locid);
@@ -1423,7 +1420,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/get-count")]
         public ObjectResult GetSectionCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1453,7 +1450,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/get-section-paginate")]
         public ObjectResult GetSectionForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1487,7 +1484,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/section/{sectionId?}")]
         public ObjectResult GetSectionById(string userid, string locid, string sectionId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_sectionLogic.GetSectionById(userid, locid, sectionId));
@@ -1503,7 +1500,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/section/get-by-section")]
         public ObjectResult GetSectionByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -1523,7 +1520,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/add")]
         public ObjectResult AddTax(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1555,7 +1552,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/update")]
         public ObjectResult UpdateTax(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1591,7 +1588,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/tax/get")]
         public ObjectResult GetTaxByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _taxLogic.GetTaxByLocationId(userid, locid);
@@ -1607,7 +1604,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/relation-add")]
         public ObjectResult AddTaxProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("taxId", out var taxId);
@@ -1634,7 +1631,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-count")]
         public ObjectResult GetTaxCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1664,7 +1661,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-tax-paginate")]
         public ObjectResult GetTaxForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1698,7 +1695,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/tax/{taxId?}")]
         public ObjectResult GetTaxById(string userid, string locid, string taxId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_taxLogic.GetTaxById(userid, locid, taxId));
@@ -1714,7 +1711,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/tax/get-by-tax")]
         public ObjectResult GetTaxByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -1733,7 +1730,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/add")]
         public ObjectResult AddVendor(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1763,7 +1760,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/add")]
         public ObjectResult UpdateVendor(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
@@ -1798,7 +1795,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/relation-add")]
         public ObjectResult AddVendorProductRelation(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 Request.Form.TryGetValue("productId", out var productId);
@@ -1826,7 +1823,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/vendor/get")]
         public ObjectResult GetVendorByLocationId(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
                 var res = _vendorLogic.GetVendorByLocationId(userid, locid);
@@ -1842,7 +1839,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-count")]
         public ObjectResult GetVendorCountForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1872,7 +1869,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-vendor-paginate")]
         public ObjectResult GetVendorForPaginate(string userid, string locid)
         {
-            dynamic body;
+            string body;
             try
             {
 
@@ -1906,7 +1903,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/vendor/{vendorId?}")]
         public ObjectResult GetVendorById(string userid, string locid, string vendorId)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_vendorLogic.GetVendorById(userid, locid, vendorId));
@@ -1922,7 +1919,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/vendor/get-by-vendor")]
         public ObjectResult GetVendorByDescription(string userid, string locid)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("description", out var description);
             try
             {
@@ -1942,7 +1939,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode?}/get")]
         public ObjectResult GetByItemCode(string userId, string locId, string productId, string itemCode)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_itemCodeLogic.GetByItemCode(userId, productId, locId, itemCode));
@@ -1959,7 +1956,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/get-with-paginate")]
         public ObjectResult GetProductItemCodeWithPagination(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Query.TryGetValue("limit", out var limit);
             Request.Query.TryGetValue("offset", out var offset);
             Request.Query.TryGetValue("order", out var order);
@@ -1977,7 +1974,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/item-code/{itemCode?}/verify")]
         public ObjectResult VerifyItemCode(string userId, string locId, string productId, string itemCode)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_itemCodeLogic.VerifyItemCode(userId, productId, locId, itemCode));
@@ -1993,7 +1990,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userId?}/{locId?}/{productId?}/item-code/add")]
         public ObjectResult AddItemCode(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("itemCode", out var itemCode);
 
             try
@@ -2011,7 +2008,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/item-code/remove")]
         public ObjectResult RemoveItemCode(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("itemCode", out var itemCode);
 
             try
@@ -2032,7 +2029,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/{upc}/get")]
         public ObjectResult GetByUpc(string userId, string locId, string productId, string upc)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_upcLogic.GetByUpc(userId, productId, locId, upc));
@@ -2048,7 +2045,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/get-with-paginate")]
         public ObjectResult GetProductUpcWithPagination(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Query.TryGetValue("limit", out var limit);
             Request.Query.TryGetValue("offset", out var offset);
             Request.Query.TryGetValue("order", out var order);
@@ -2067,7 +2064,7 @@ namespace POS_Api.Controllers
         [HttpGet, Route("pos/{userid?}/{locid?}/{productid?}/upc/{upc}/verify")]
         public ObjectResult VerifyUpc(string userId, string locId, string productId, string upc)
         {
-            dynamic body;
+            string body;
             try
             {
                 body = JsonSerializer.Serialize(_upcLogic.VerifyUpc(userId, productId, locId, upc));
@@ -2083,7 +2080,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/{productId?}/upc/add")]
         public ObjectResult AddUpc(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("upc", out var upc);
 
             try
@@ -2101,7 +2098,7 @@ namespace POS_Api.Controllers
         [HttpPost, Route("pos/{userid?}/{locid?}/{productid?}/upc/remove")]
         public ObjectResult RemoveUpc(string userId, string locId, string productId)
         {
-            dynamic body;
+            string body;
             Request.Form.TryGetValue("upc", out var upc);
 
             try
