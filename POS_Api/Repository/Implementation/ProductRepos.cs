@@ -941,7 +941,6 @@ namespace POS_Api.Repository.Implementation
             bool isRelationExistItemCode = IsRelationItemCodeExist(locationId, productId, upc);
             bool isRelationLocationExist = IsRelationLocationProductExist(locationId, productId);
             int res;
-            Console.WriteLine("HIT ADD RELATION");
 
             if (!isRelationExistItemCode && isRelationLocationExist)
             {
@@ -969,8 +968,6 @@ namespace POS_Api.Repository.Implementation
                 catch (Exception e)
                 {
                     return false;
-                    // Console.WriteLine(e.ToString());
-                    // throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, e.ToString()));
                 }
 
 

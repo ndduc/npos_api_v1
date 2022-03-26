@@ -26,7 +26,6 @@ namespace POS_Api.Database.MySql.Configuration
                 }
                 catch (Exception err)
                 {
-                    Console.WriteLine("ERROR\t\t" + err);
                     return false;
                 }
 

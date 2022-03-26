@@ -42,7 +42,6 @@ namespace ConsoleApp
             byte[] resultArray = objCrytpoTransform.TransformFinalBlock(toEncryptedArray, 0, toEncryptedArray.Length);
             objTripleDESCryptoService.Clear();
             string final = Convert.ToBase64String(resultArray, 0, resultArray.Length);
-            Console.WriteLine("Encrypted:\t\t" + final);
             return final;
         }
 
@@ -73,7 +72,6 @@ namespace ConsoleApp
 
             //Convert and return the decrypted data/byte into string format.
             string final = UTF8Encoding.UTF8.GetString(resultArray);
-            Console.WriteLine("Decrypt\t\t" + final);
             return final;
         }
     }
