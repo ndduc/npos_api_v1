@@ -4,6 +4,7 @@ namespace POS_Api.Model
 {
     public class UserLocationModel : UserModel
     {
-         IEnumerable<LocationModel> UserLocations { get; set; }
+         public IList<LocationModel> UserLocations { get; set; }
+         public IEnumerable<string> LocationIds { get; set; }
     }
 }

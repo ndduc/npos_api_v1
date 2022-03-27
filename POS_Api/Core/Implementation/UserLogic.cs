@@ -1,5 +1,6 @@
 ﻿using POS_Api.Core.Interface;
 using POS_Api.Model;
+using POS_Api.Model.ReponseViewModel;
 using POS_Api.Repository.Implementation;
 using POS_Api.Repository.Interface;
 using POS_Api.Shared.ExceptionHelper;
@@ -14,9 +15,11 @@ namespace POS_Api.Core.Implementation
     {
 
         private readonly IUserRepos _userRepos;
+        private readonly ILocationRepos _locationRepos;
         public UserLogic()
         {
             _userRepos = new UserRepos();
+            _locationRepos = new LocationRepos();
         }
         public bool AddUser(UserModel userModel)
         {
@@ -110,7 +113,7 @@ namespace POS_Api.Core.Implementation
             return _userRepos.AddRelationLocationUser(muserId, userId, locationId, reason);
         }
 
-        public dynamic GetUserPagination(string userId, string locId, Dictionary<string, string> param)
+        public GenericPaginationModelVm<UserLocationModel> GetUserPagination(string userId, string locId, Dictionary<string, string> param)
         {
             bool isUserValid = _userRepos.VerifyUser(userId);
             if (isUserValid)
@@ -127,7 +130,30 @@ namespace POS_Api.Core.Implementation
 
                 if (!string.IsNullOrWhiteSpace(locId))
                 {
-                    return null;
+                    int count = _userRepos.GetUserPaginationCount(locId, whereClause);
+                    GenericPaginationModelVm<UserLocationModel> paginationModel = new GenericPaginationModelVm<UserLocationModel>
+                    {
+                        Count = count,
+                        StartIndex = int.Parse(startIdx),
+                        EndIndex = int.Parse(endIdx)
+                    };
+                    if (count != 0)
+                    {
+                        IEnumerable<UserLocationModel> userLocationModel = _userRepos.GetUserPagination(locId, whereClause);
+                        paginationModel.DataObject = userLocationModel;
+
+                        foreach(var item in paginationModel.DataObject)
+                        {
+                            item.UserLocations = new List<LocationModel>();
+                            foreach (var location in item.LocationIds)
+                            {
+                                LocationModel loc = _locationRepos.GetLocationRelation(userId, location);
+                                item.UserLocations.Add(loc);
+                            }
+                        }
+                    }
+                    
+                    return paginationModel;
                 } else
                 {
                     throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));

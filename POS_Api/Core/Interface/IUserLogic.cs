@@ -1,4 +1,5 @@
 ﻿using POS_Api.Model;
+using POS_Api.Model.ReponseViewModel;
 using System.Collections.Generic;
 
 namespace POS_Api.Core.Interface
@@ -18,7 +19,7 @@ namespace POS_Api.Core.Interface
 
         public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason);
 
-        public dynamic GetUserPagination(string userId, string locId, Dictionary<string, string> param);
+        public GenericPaginationModelVm<UserLocationModel> GetUserPagination(string userId, string locId, Dictionary<string, string> param);
 
 
     }

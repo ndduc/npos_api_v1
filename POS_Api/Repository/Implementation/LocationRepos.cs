@@ -143,5 +143,47 @@ namespace POS_Api.Repository.Implementation
             }
         }
 
+        public LocationModel GetLocationRelation(string userId, string locId)
+        {
+            Conn = new DBConnection();
+            LocationModel locationModel = new LocationModel();
+            string query = " SELECT RLU.user_uid, RLU.relation_reason, AL.* FROM ref_location_user as RLU "
+                                + " INNER JOIN asset_location as AL "
+                                + " ON RLU.location_uid = AL.uid "
+                                + " RLU.user_uid = "
+                                + DbHelper.SetDBValue(userId, false)
+                                + " AL.uid = "
+                                + DbHelper.SetDBValue(locId, true)
+                                + "; ";
+            if (Conn.IsConnect())
+            {
+                Cmd = new MySqlCommand(query, this.Conn.Connection);
+                Reader = Cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    LocationModel model = new LocationModel()
+                    {
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        Name = DbHelper.TryGet(Reader, "name"),
+                        Address = DbHelper.TryGet(Reader, "address"),
+                        ZipCode = int.Parse(DbHelper.TryGet(Reader, "zipcode")),
+                        State = DbHelper.TryGet(Reader, "state"),
+                        PhoneNumber = DbHelper.TryGet(Reader, "phonenumber"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        RelationReason = DbHelper.TryGet(Reader, "relation_reason")
+                    };
+                    locationModel = model;
+
+                }
+                this.Conn.Close();
+                return locationModel;
+            } else
+            {
+                this.Conn.Close();
+                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
+            }
+        }
+
     }
 }

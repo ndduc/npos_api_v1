@@ -1,4 +1,5 @@
 ﻿using POS_Api.Model;
+using System.Collections.Generic;
 
 namespace POS_Api.Repository.Interface
 {
@@ -17,5 +18,8 @@ namespace POS_Api.Repository.Interface
         public bool AddRelationLocationUser(string muserId, string userId, string locationId, string reason);
 
         public bool IsRelationLocationUserExist(string userId, string locationId, string reason);
+
+        public IEnumerable<UserLocationModel> GetUserPagination(string locationId, string whereClause);
+        public int GetUserPaginationCount(string locationId, string whereClause);
     }
 }

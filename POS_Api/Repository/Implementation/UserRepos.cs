@@ -290,9 +290,7 @@ namespace POS_Api.Repository.Implementation
                         + " INNER JOIN "
                         + " ( "
                         + " SELECT RLU.user_uid, "
-                        + " group_concat(RLU.location_uid) as location_uid,  "
-                        + " group_concat(RLU.relation_reason) as relation_reason,  "
-                        + " group_concat(AL.`name`) as `location_name`  "
+                        + " group_concat(RLU.location_uid) as location_uid  "
                         + " FROM ref_location_user as RLU "
                         + " INNER JOIN asset_location as AL "
                         + " ON RLU.location_uid = AL.uid "
@@ -317,23 +315,20 @@ namespace POS_Api.Repository.Implementation
             else
             {
                 Conn.Close();
-                throw DbConnException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name));
             }
             return count;
         }
 
-        public dynamic GetUserPagination(string locationId, string whereClause)
+        public IEnumerable<UserLocationModel> GetUserPagination(string locationId, string whereClause)
         {
             Conn = new DBConnection();
-            List<dynamic> userList = new List<dynamic>();
+            List<UserLocationModel> userList = new List<UserLocationModel>();
             string query = " SELECT  AU.*, LOCATION.* "
                         + " FROM asset_user as AU "
                         + " INNER JOIN "
                         + " ( "
                         + " SELECT RLU.user_uid, "
-                        + " group_concat(RLU.location_uid) as location_uid,  "
-                        + " group_concat(RLU.relation_reason) as relation_reason,  "
-                        + " group_concat(AL.`name`) as `location_name`  "
+                        + " group_concat(RLU.location_uid) as location_uid  "
                         + " FROM ref_location_user as RLU "
                         + " INNER JOIN asset_location as AL "
                         + " ON RLU.location_uid = AL.uid "
@@ -351,7 +346,24 @@ namespace POS_Api.Repository.Implementation
                 Reader = Cmd.ExecuteReader();
                 while (Reader.Read())
                 {
-                    
+                    UserLocationModel model = new UserLocationModel() { 
+                        UId = DbHelper.TryGet(Reader, "uid"),
+                        UserName = DbHelper.TryGet(Reader, "username"),
+                        Password = DbHelper.TryGet(Reader, "password"), // descript needed
+                        FirstName = DbHelper.TryGet(Reader, "firstname"),
+                        LastName = DbHelper.TryGet(Reader, "lastname"),
+                        Email = DbHelper.TryGet(Reader, "email"),
+                        Email2 = DbHelper.TryGet(Reader, "email2"),
+                        Phone = DbHelper.TryGet(Reader, "phone"),
+                        Address = DbHelper.TryGet(Reader, "address"),
+                        UserType = DbHelper.TryGet(Reader, "usertype"),
+                        AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
+                        UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
+                        AddedBy = DbHelper.TryGet(Reader, "added_by"),
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                        LocationIds = Convert.ToString(DbHelper.TryGet(Reader, "location_uid")).Split(',')
+                    };
+                    userList.Add(model);
                 }
                 Conn.Close();
                 return userList;

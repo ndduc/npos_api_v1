@@ -9,5 +9,7 @@ namespace POS_Api.Repository.Interface
         public bool VerifyUIdExist(string uid);
         public bool AddLocationExecution(LocationModel model);
         public IEnumerable<LocationModel> GetLocationByUserIdExecution(string userId);
+
+        public LocationModel GetLocationRelation(string userId, string locId);
     }
 }
