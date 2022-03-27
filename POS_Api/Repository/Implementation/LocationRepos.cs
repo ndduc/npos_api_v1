@@ -150,9 +150,9 @@ namespace POS_Api.Repository.Implementation
             string query = " SELECT RLU.user_uid, RLU.relation_reason, AL.* FROM ref_location_user as RLU "
                                 + " INNER JOIN asset_location as AL "
                                 + " ON RLU.location_uid = AL.uid "
-                                + " RLU.user_uid = "
-                                + DbHelper.SetDBValue(userId, false)
-                                + " AL.uid = "
+                                + " WHERE RLU.user_uid = "
+                                + DbHelper.SetDBValue(userId, true)
+                                + " AND AL.uid = "
                                 + DbHelper.SetDBValue(locId, true)
                                 + "; ";
             if (Conn.IsConnect())

@@ -147,7 +147,7 @@ namespace POS_Api.Core.Implementation
                             item.UserLocations = new List<LocationModel>();
                             foreach (var location in item.LocationIds)
                             {
-                                LocationModel loc = _locationRepos.GetLocationRelation(userId, location);
+                                LocationModel loc = _locationRepos.GetLocationRelation(item.UId, location);
                                 item.UserLocations.Add(loc);
                             }
                         }
