@@ -125,7 +125,7 @@ namespace POS_Api.Core.Implementation
                 string whereClause = "";
                 if (!string.IsNullOrWhiteSpace(userFullName))
                 {
-                    whereClause = "";
+                    whereClause = " WHERE AU.firstname LIKE '%" + userFullName  + "%' OR AU.lastname LIKE '%" + userFullName + "%' ";
                 }
 
                 if (!string.IsNullOrWhiteSpace(locId))

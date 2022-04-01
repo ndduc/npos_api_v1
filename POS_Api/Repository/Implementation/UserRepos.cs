@@ -349,7 +349,7 @@ namespace POS_Api.Repository.Implementation
                     UserLocationModel model = new UserLocationModel() { 
                         UId = DbHelper.TryGet(Reader, "uid"),
                         UserName = DbHelper.TryGet(Reader, "username"),
-                        Password = DbHelper.TryGet(Reader, "password"), // descript needed
+                        Password = HashingPassword.DecryptCipherTextToPlainText(DbHelper.TryGet(Reader, "password")), // descript needed
                         FirstName = DbHelper.TryGet(Reader, "firstname"),
                         LastName = DbHelper.TryGet(Reader, "lastname"),
                         Email = DbHelper.TryGet(Reader, "email"),
