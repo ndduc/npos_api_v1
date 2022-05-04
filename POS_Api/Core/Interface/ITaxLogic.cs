@@ -19,5 +19,6 @@ namespace POS_Api.Core.Interface
         public TaxModel GetTaxById(string userId, string locId, string TaxId);
 
         public IEnumerable<TaxModel> GetTaxByDescription(string userId, string locId, string description);
+
     }
 }

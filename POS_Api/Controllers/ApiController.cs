@@ -29,7 +29,7 @@ namespace POS_Api.Controllers
         private readonly IVendorLogic _vendorLogic;
         private readonly IItemCodeLogic _itemCodeLogic;
         private readonly IUpcLogic _upcLogic;
-
+        private readonly ICheckoutSettingLogic _checkoutSettingLogic;
         private readonly ILogger<ApiController> _logger;
 
         public ApiController(ILogger<ApiController> logger)
@@ -47,6 +47,7 @@ namespace POS_Api.Controllers
             _vendorLogic = new VendorLogic();
             _itemCodeLogic = new ItemCodeLogic();
             _upcLogic = new UpcLogic();
+            _checkoutSettingLogic = new CheckoutSettingLogic();
         }
 
         #region USER SECTION
@@ -2129,6 +2130,24 @@ namespace POS_Api.Controllers
             {
                 body = JsonSerializer.Serialize(_upcLogic.RemoveUpc(productId, locId, upc, userId));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+        #endregion
+
+        #region CHECKOUT
+        [HttpGet, Route("pos/{userid?}/{locid?}/checkout-setting/get")]
+        public ObjectResult GetCheckoutSettingByLocationId(string userid, string locid)
+        {
+            string body;
+            try
+            {
+                var res = _checkoutSettingLogic.GetCheckoutSetting(userid, locid);
+                return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
             }
             catch (Exception e)
             {
