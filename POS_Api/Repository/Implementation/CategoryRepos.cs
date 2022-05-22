@@ -71,6 +71,7 @@ namespace POS_Api.Repository.Implementation
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
                             ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
+                            DepartmentUId = DbHelper.TryGet(Reader, "department_uid"),
                         };
 
                         lst.Add(model);
@@ -414,6 +415,7 @@ namespace POS_Api.Repository.Implementation
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
                         UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
                         ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
+                        DepartmentUId = DbHelper.TryGet(Reader, "department_uid"),
                     };
                     itemList.Add(model);
                 }
@@ -458,6 +460,7 @@ namespace POS_Api.Repository.Implementation
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
                         UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
                         ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
+                        DepartmentUId = DbHelper.TryGet(Reader, "department_uid"),
                     };
                     item = model;
                 }
@@ -502,6 +505,7 @@ namespace POS_Api.Repository.Implementation
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
                         UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
                         ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
+                        DepartmentUId = DbHelper.TryGet(Reader, "department_uid"),
                     };
                     itemList.Add(model);
                 }
@@ -547,6 +551,7 @@ namespace POS_Api.Repository.Implementation
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
                         UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
                         ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
+                        DepartmentUId = DbHelper.TryGet(Reader, "department_uid"),
                     };
                     itemList.Add(model);
                 }
