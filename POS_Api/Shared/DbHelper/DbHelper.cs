@@ -20,6 +20,11 @@ namespace POS_Api.Shared.DbHelper
             }
         }
 
+        public static bool TryGetBoolean(MySqlDataReader reader, string index)
+        {
+                return reader.GetBoolean(index);
+        }
+
         public static string SetDBValueNull(dynamic value, bool isLast)
         {
             string return_value = null;

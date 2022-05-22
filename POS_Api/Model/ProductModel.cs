@@ -57,7 +57,7 @@ namespace POS_Api.Model
         }
 
         public ProductModel(string uid, string desc, string secDesc, string thirdDesc, int upc,
-            double cost, double price, string addedDatetime, string updateDatetime, string addBy, string updateBy)
+            double cost, double price, string addedDatetime, string updateDatetime, string addBy, string updateBy, bool applyToUI)
         {
             UId = uid;
             Description = desc;
@@ -70,6 +70,7 @@ namespace POS_Api.Model
             UpdatedDateTime = updateDatetime;
             AddedBy = addBy;
             UpdatedBy = updateBy;
+            ApplyToUI = applyToUI;
         }
 
         //Use In Add Product

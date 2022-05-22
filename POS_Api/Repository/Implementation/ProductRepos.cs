@@ -50,7 +50,8 @@ namespace POS_Api.Repository.Implementation
                         DbHelper.TryGet(Reader, "added_datetime"),
                         DbHelper.TryGet(Reader, "updated_datetime"),
                         DbHelper.TryGet(Reader, "added_by"),
-                        DbHelper.TryGet(Reader, "updated_by")
+                        DbHelper.TryGet(Reader, "updated_by"),
+                        DbHelper.TryGetBoolean(Reader, "apply_to_ui")
                     );
                     productList.Add(model);
                 }
@@ -155,7 +156,8 @@ namespace POS_Api.Repository.Implementation
                         AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
                         UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                        ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                     };
                     productList.Add(model);
                 }
@@ -198,7 +200,8 @@ namespace POS_Api.Repository.Implementation
                             AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                            UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                            UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
                     }
                 }
@@ -555,6 +558,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -599,6 +603,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -643,6 +648,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -687,6 +693,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -732,6 +739,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -777,6 +785,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);

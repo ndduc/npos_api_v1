@@ -257,6 +257,7 @@ namespace POS_Api.Repository.Implementation
                             UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                             AddedBy = DbHelper.TryGet(Reader, "added_by"),
                             UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                            ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                         };
 
                         lst.Add(model);
@@ -409,7 +410,8 @@ namespace POS_Api.Repository.Implementation
                         AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
                         UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                        ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                     };
                     itemList.Add(model);
                 }
@@ -452,7 +454,8 @@ namespace POS_Api.Repository.Implementation
                         AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
                         UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                        ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                     };
                     item = model;
                 }
@@ -496,7 +499,8 @@ namespace POS_Api.Repository.Implementation
                         AddedDateTime = DbHelper.TryGet(Reader, "added_datetime"),
                         UpdatedDateTime = DbHelper.TryGet(Reader, "updated_datetime"),
                         AddedBy = DbHelper.TryGet(Reader, "added_by"),
-                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by")
+                        UpdatedBy = DbHelper.TryGet(Reader, "updated_by"),
+                        ApplyToUI = DbHelper.TryGetBoolean(Reader, "apply_to_ui"),
                     };
                     itemList.Add(model);
                 }
