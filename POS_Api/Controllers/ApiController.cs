@@ -909,6 +909,22 @@ namespace POS_Api.Controllers
             }
         }
 
+        [HttpPost, Route("pos/{userid?}/{locid?}/{departmentId?}/category")]
+        public ObjectResult GetCategoryByDepartmentId(string userid, string locid, string deptId)
+        {
+            string body;
+            try
+            {
+                body = JsonSerializer.Serialize(_categoryLogic.GetCategoryByDepartmentId(userid, locid, deptId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         #endregion
 

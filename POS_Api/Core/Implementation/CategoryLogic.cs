@@ -163,5 +163,17 @@ namespace POS_Api.Core.Implementation
             }
         }
 
+        public IEnumerable<CategoryModel> GetCategoryByDepartmentId(string userId, string locId, string deptId)
+        {
+            if (_userRepos.VerifyUser(userId))
+            {
+                return _categoryRepos.GetCategoryByDepartmentId(locId, deptId);
+            }
+            else
+            {
+                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Unauthorized Access"));
+            }
+        }
+
     }
 }

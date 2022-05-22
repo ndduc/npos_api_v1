@@ -18,5 +18,7 @@ namespace POS_Api.Core.Interface
         public CategoryModel GetCategoryById(string userId, string locId, string CategoryId);
 
         public IEnumerable<CategoryModel> GetCategoryByDescription(string userId, string locId, string description);
+
+        public IEnumerable<CategoryModel> GetCategoryByDepartmentId(string userId, string locId, string deptId);
     }
 }

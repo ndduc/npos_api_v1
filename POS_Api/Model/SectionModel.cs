@@ -4,8 +4,8 @@
     {
         public string UId { get; set; }
         public string Description { get; set; }
-
         public string SecondDescription { get; set; }
+        public bool ApplyToUI { get; set; }
         public string AddedDateTime { get; set; }
         public string UpdatedDateTime { get; set; }
         public string AddedBy { get; set; }

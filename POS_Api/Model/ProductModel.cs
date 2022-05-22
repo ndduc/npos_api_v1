@@ -13,6 +13,7 @@ namespace POS_Api.Model
         public int ItemCode { get; set; }
         public double Cost { get; set; }
         public double Price { get; set; }
+        public bool ApplyToUI { get; set; }
         public string AddedDateTime { get; set; }
         public string UpdatedDateTime { get; set; }
         public string AddedBy { get; set; }
