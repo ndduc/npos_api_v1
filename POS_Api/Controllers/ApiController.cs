@@ -22,6 +22,7 @@ namespace POS_Api.Controllers
         private readonly ILocationLogic _LocationLogic;
         private readonly IProductLogic _ProductLogic;
         private readonly ICategoryLogic _categoryLogic;
+        private readonly ISubCategoryLogic _subCategoryLogic;
         private readonly IDepartmentLogic _departmentLogic;
         private readonly IDiscountLogic _discountLogic;
         private readonly ISectionLogic _sectionLogic;
@@ -916,6 +917,230 @@ namespace POS_Api.Controllers
             try
             {
                 body = JsonSerializer.Serialize(_categoryLogic.GetCategoryByDepartmentId(userid, locid, deptId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+        #endregion
+
+        #region SUB CATEGORY
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/add")]
+        public ObjectResult AddSubCategory(string userid, string locid)
+        {
+            string body;
+            try
+            {
+                Request.Form.TryGetValue("desc", out var Desc);
+                SubCategoryModel model = new SubCategoryModel()
+                {
+                    Description = Desc
+                };
+                if (_subCategoryLogic.AddSubCategory(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/update")]
+        public ObjectResult UpdateSubCategory(string userid, string locid)
+        {
+            string body;
+            try
+            {
+                Request.Form.TryGetValue("id", out var Id);
+                Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("note", out var Note);
+                SubCategoryModel model = new SubCategoryModel()
+                {
+                    Description = Desc,
+                    UId = Id,
+                    SecondDescription = Note
+                };
+                if (_subCategoryLogic.UpdateSubCategory(model, userid, locid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO UPDATE SUB CATEGORY";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/relation-add")]
+        public ObjectResult AddSubCategoryProductRelation(string userid, string locid)
+        {
+            string body;
+            try
+            {
+                Request.Form.TryGetValue("categoryId", out var categoryId);
+                Request.Form.TryGetValue("productId", out var productId);
+                if (_subCategoryLogic.AddSubCategoryProductRelation(categoryId, productId, locid, userid))
+                {
+                    body = "OK";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+                }
+                else
+                {
+                    body = "INTERNAL ERROR FAILED TO INSERT";
+                    return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+                }
+
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/subcategory/get")]
+        public ObjectResult GetSubCategoryByLocationId(string userid, string locid)
+        {
+            string body;
+            try
+            {
+                var res = _subCategoryLogic.GetSubCategoryByLocationId(userid, locid);
+                return HttpResponseHelper.HttpResponse(res, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/get-count")]
+        public ObjectResult GetSubCategoryCountForPaginate(string userid, string locid)
+        {
+            string body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid }
+                };
+                body = JsonSerializer.Serialize(_subCategoryLogic.GetSubCategoryPaginateCount(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/get-subcategory-paginate")]
+        public ObjectResult GetSubCategoryForPaginate(string userid, string locid)
+        {
+            string body;
+            try
+            {
+
+                // To Do Add View Model
+                // Pull Category By Product Id if not exist return emptry lst
+                // Pull Department By PId ...
+                // Pull Section By PId ...
+                // Pull Vendor By PId ...
+
+                Request.Form.TryGetValue("searchType", out var searchType);
+                Request.Form.TryGetValue("startIdx", out var startIdx);
+                Request.Form.TryGetValue("endIdx", out var endIdx);
+                Dictionary<string, string> dict = new Dictionary<string, string>
+                {
+                    { "locationId", locid},
+                    { "searchType", searchType },
+                    { "userId", userid },
+                    { "startIdx", startIdx },
+                    { "endIdx", endIdx }
+                };
+                body = JsonSerializer.Serialize(_subCategoryLogic.GetSubCategoryPaginate(dict));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/subcategory/{subcategoryId?}")]
+        public ObjectResult GetSubCategoryById(string userid, string locid, string subcategoryId)
+        {
+            string body;
+            try
+            {
+                body = JsonSerializer.Serialize(_subCategoryLogic.GetSubCategoryById(userid, locid, subcategoryId));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost, Route("pos/{userid?}/{locid?}/subcategory/get-by-description")]
+        public ObjectResult GetSubCategoryByDescription(string userid, string locid)
+        {
+            string body;
+            Request.Form.TryGetValue("description", out var description);
+            try
+            {
+                body = JsonSerializer.Serialize(_subCategoryLogic.GetSubCategoryByDescription(userid, locid, description));
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                body = "INTERNAL ERROR\t\t" + e.ToString();
+                return HttpResponseHelper.HttpResponse(body, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet, Route("pos/{userid?}/{locid?}/{deptId?}/subcategory")]
+        public ObjectResult GetSubCategoryByDepartmentId(string userid, string locid, string deptId)
+        {
+            string body;
+            try
+            {
+                body = JsonSerializer.Serialize(_subCategoryLogic.GetSubCategoryByDepartmentId(userid, locid, deptId));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
             }
             catch (Exception e)
