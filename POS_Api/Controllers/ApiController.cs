@@ -909,7 +909,7 @@ namespace POS_Api.Controllers
             }
         }
 
-        [HttpPost, Route("pos/{userid?}/{locid?}/{departmentId?}/category")]
+        [HttpGet, Route("pos/{userid?}/{locid?}/{deptId?}/category")]
         public ObjectResult GetCategoryByDepartmentId(string userid, string locid, string deptId)
         {
             string body;

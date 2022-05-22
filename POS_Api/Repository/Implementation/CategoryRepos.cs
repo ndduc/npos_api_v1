@@ -528,7 +528,7 @@ namespace POS_Api.Repository.Implementation
             this.Conn = new DBConnection();
             string query = "SELECT AL.* FROM asset_category AS AL"
              + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
-             + " department_uid like  =" + DbHelper.SetDBValue(deptId, true) + " "
+             + " department_uid =" + DbHelper.SetDBValue(deptId, true) + " "
              + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
              + "; ";
             if (Conn.IsConnect())
