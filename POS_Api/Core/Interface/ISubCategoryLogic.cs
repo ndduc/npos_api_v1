@@ -15,7 +15,7 @@ namespace POS_Api.Core.Interface
         public int GetCategoryPaginateCount(Dictionary<string, string> param);
         public IEnumerable<CategoryModel> GetCategoryPaginate(Dictionary<string, string> param);
 
-        public CategoryModel GetCategoryById(string userId, string locId, string CategoryId);
+        public CategoryModel GetCategoryById(string userId, string locId, string SubCategoryId);
 
         public IEnumerable<CategoryModel> GetCategoryByDescription(string userId, string locId, string description);
 
