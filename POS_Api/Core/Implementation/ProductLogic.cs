@@ -520,9 +520,9 @@ namespace POS_Api.Core.Implementation
         }
 
 
-        public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param)
+        public ProductModelVm GetProductById(string userId, string locationId, Dictionary<string, string> param, bool isCheckout)
         {
-            return _productRepos.GetProductByIdWithMapExecution(userId, locationId, param);
+            return _productRepos.GetProductByIdWithMapExecution(userId, locationId, param, isCheckout);
         }
 
         public bool AddRelationItemCode(string locationId, string productId, string userId, string itemCode)

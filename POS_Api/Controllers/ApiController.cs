@@ -610,6 +610,12 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("itemCode", out var Code);
                 Request.Form.TryGetValue("upc", out var Upc);
                 Request.Form.TryGetValue("searchText", out var SearchText);
+                Request.Form.TryGetValue("isCheckout", out var isCheckout);
+
+                bool isCheckOut = false;
+                if (!string.IsNullOrWhiteSpace(isCheckout)) {
+                    isCheckOut = bool.Parse(isCheckout);
+                }
                 Dictionary<string, string> dict = new Dictionary<string, string>
                 {
                     { "uid", Uid },
@@ -617,7 +623,7 @@ namespace POS_Api.Controllers
                     { "upc", Upc },
                     { "searchText", SearchText }
                 };
-                body = JsonSerializer.Serialize(_ProductLogic.GetProductById(userid, locid, dict));
+                body = JsonSerializer.Serialize(_ProductLogic.GetProductById(userid, locid, dict, isCheckOut));
                 return HttpResponseHelper.HttpResponse(body, HttpStatusCode.OK);
             }
             catch (Exception e)

@@ -15,7 +15,7 @@ namespace POS_Api.Repository.Interface
         public bool AddProductExecutionRelation(ProductModel model, string userId, string locationId);
         public bool UpdateProductExecution(ProductModel model);
         public bool UpdateProductExecutionRelation(ProductModel model, string locationId);
-        public ProductModelVm GetProductByIdWithMapExecution(string userId, string locationId, Dictionary<string, string> param);
+        public ProductModelVm GetProductByIdWithMapExecution(string userId, string locationId, Dictionary<string, string> param, bool isCheckout = false);
 
         public bool IsRelationLocationProductExist(string locationId, string productId);
         public bool IsRelationItemCodeExist(string locationId, string productId, string itemCode);

@@ -467,36 +467,49 @@ namespace POS_Api.Repository.Implementation
         }
 
 
-        public ProductModelVm GetProductByIdWithMapExecution(string userId, string locationId, Dictionary<string, string> param)
+        public ProductModelVm GetProductByIdWithMapExecution(string userId, string locationId, Dictionary<string, string> param, bool isCheckout)
         {
+            Console.WriteLine(isCheckout);
             param.TryGetValue("uid", out string uid);
             param.TryGetValue("itemCode", out string itemCode);
             param.TryGetValue("upc", out string upc);
             param.TryGetValue("searchText", out string searchText);
-            string whereClause;
-            if (!string.IsNullOrWhiteSpace(uid))
+            string whereClause = "";
+            if (isCheckout)
             {
-                whereClause = " WHERE AP.uid = " + DbHelper.SetDBValue(uid, true) + " ";
+                if (!string.IsNullOrWhiteSpace(upc))
+                {
+                    whereClause = " INNER JOIN REF_LOCATION_PRODUCT_UPC AS RLPI "
+                                     + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.upc = " + DbHelper.SetDBValue(upc, true) + " ";
+                }
             }
-            else if (!string.IsNullOrWhiteSpace(itemCode))
-            {
-                whereClause = " INNER JOIN REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
-                                + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.item_code = " + DbHelper.SetDBValue(itemCode, true) + " ";
-            } else if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                //whereClause = " WHERE AP.description = '" + searchText + "'";
-                whereClause = " WHERE 1 = 0";
+            else {
+                if (!string.IsNullOrWhiteSpace(uid))
+                {
+                    whereClause = " WHERE AP.uid = " + DbHelper.SetDBValue(uid, true) + " ";
+                }
+                else if (!string.IsNullOrWhiteSpace(itemCode))
+                {
+                    whereClause = " INNER JOIN REF_LOCATION_PRODUCT_ITEMCODE AS RLPI "
+                                    + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.item_code = " + DbHelper.SetDBValue(itemCode, true) + " ";
+                }
+                else if (!string.IsNullOrWhiteSpace(searchText))
+                {
+                    //whereClause = " WHERE AP.description = '" + searchText + "'";
+                    whereClause = " WHERE 1 = 0";
 
+                }
+                else if (!string.IsNullOrWhiteSpace(upc))
+                {
+                    whereClause = " INNER JOIN REF_LOCATION_PRODUCT_UPC AS RLPI "
+                                     + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.upc = " + DbHelper.SetDBValue(upc, true) + " ";
+                }
+                else
+                {
+                    throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Argument"));
+                }
             }
-            else if (!string.IsNullOrWhiteSpace(upc))
-            {
-                whereClause = " INNER JOIN REF_LOCATION_PRODUCT_UPC AS RLPI "
-                                 + " ON RLP.location_uid = RLPI.location_uid AND AP.uid = RLPI.product_uid AND RLPI.upc = " + DbHelper.SetDBValue(upc, true) + " ";
-            }
-            else
-            {
-                throw GenericException(GenerateExceptionMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Invalid Argument"));
-            }
+            
 
             if (_userRepos.VerifyUser(userId))
             {
