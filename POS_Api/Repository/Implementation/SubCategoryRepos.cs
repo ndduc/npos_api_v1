@@ -20,6 +20,7 @@ namespace POS_Api.Repository.Implementation
             string query = " UPDATE asset_sub_category "
                         + " SET "
                         + " `description` = " + DbHelper.SetDBValue(model.Description, false)
+                        + " `category_uid` = " + DbHelper.SetDBValue(model.CategoryUId, false)
                         + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
                         + " WHERE "
                         + " uid = " + DbHelper.SetDBValue(model.UId, true) + " AND "
@@ -108,12 +109,13 @@ namespace POS_Api.Repository.Implementation
             int res = 0;
             Conn = new DBConnection();
             string query = "INSERT INTO asset_sub_category "
-                            + " (`uid`,`description`, `location_uid`, `added_by`) "
+                            + " (`uid`,`description`, `location_uid`, `added_by`, `category_uid`) "
                             + " VALUES ("
                             + DbHelper.SetDBValue(model.UId, false)
                             + DbHelper.SetDBValue(model.Description, false)
                             + DbHelper.SetDBValue(model.LocationUId, false)
-                            + DbHelper.SetDBValue(model.AddedBy, true)
+                            + DbHelper.SetDBValue(model.AddedBy, false)
+                            + DbHelper.SetDBValue(model.CategoryUId, true)
                             + " ); ";
             try
             {

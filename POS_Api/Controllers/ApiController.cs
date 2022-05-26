@@ -947,9 +947,11 @@ namespace POS_Api.Controllers
             try
             {
                 Request.Form.TryGetValue("desc", out var Desc);
+                Request.Form.TryGetValue("cat_uid", out var CatUId);
                 SubCategoryModel model = new SubCategoryModel()
                 {
-                    Description = Desc
+                    Description = Desc,
+                    CategoryUId = CatUId
                 };
                 if (_subCategoryLogic.AddSubCategory(model, userid, locid))
                 {
@@ -979,11 +981,13 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("id", out var Id);
                 Request.Form.TryGetValue("desc", out var Desc);
                 Request.Form.TryGetValue("note", out var Note);
+                Request.Form.TryGetValue("cat_uid", out var CatUId);
                 SubCategoryModel model = new SubCategoryModel()
                 {
                     Description = Desc,
                     UId = Id,
-                    SecondDescription = Note
+                    SecondDescription = Note,
+                    CategoryUId = CatUId
                 };
                 if (_subCategoryLogic.UpdateSubCategory(model, userid, locid))
                 {
