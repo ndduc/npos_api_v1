@@ -108,12 +108,13 @@ namespace POS_Api.Repository.Implementation
             int res = 0;
             Conn = new DBConnection();
             string query = "INSERT INTO asset_category "
-                            + " (`uid`,`description`, `location_uid`, `added_by`) "
+                            + " (`uid`,`description`, `location_uid`, `added_by`, `department_uid`) "
                             + " VALUES ("
                             + DbHelper.SetDBValue(model.UId, false)
                             + DbHelper.SetDBValue(model.Description, false)
                             + DbHelper.SetDBValue(model.LocationUId, false)
-                            + DbHelper.SetDBValue(model.AddedBy, true)
+                            + DbHelper.SetDBValue(model.AddedBy, false)
+                            + DbHelper.SetDBValue(model.DepartmentUId, true)
                             + " ); ";
             try
             {
