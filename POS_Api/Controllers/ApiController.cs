@@ -753,11 +753,13 @@ namespace POS_Api.Controllers
                 Request.Form.TryGetValue("id", out var Id);
                 Request.Form.TryGetValue("desc", out var Desc);
                 Request.Form.TryGetValue("note", out var Note);
+                Request.Form.TryGetValue("dept_uid", out var deptUId);
                 CategoryModel model = new CategoryModel()
                 {
                     Description = Desc,
                     UId = Id,
-                    SecondDescription = Note
+                    SecondDescription = Note,
+                    DepartmentUId = deptUId
                 };
                 if (_categoryLogic.UpdateCategory(model, userid, locid))
                 {

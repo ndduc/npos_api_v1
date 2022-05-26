@@ -20,6 +20,7 @@ namespace POS_Api.Repository.Implementation
             string query = " UPDATE asset_category "
                         + " SET "
                         + " `description` = " + DbHelper.SetDBValue(model.Description, false)
+                        + " `department_uid` = " + DbHelper.SetDBValue(model.DepartmentUId, false)
                         + " `updated_by` = " + DbHelper.SetDBValue(model.UpdatedBy, true)
                         + " WHERE "
                         + " uid = " + DbHelper.SetDBValue(model.UId, true) + " AND "
