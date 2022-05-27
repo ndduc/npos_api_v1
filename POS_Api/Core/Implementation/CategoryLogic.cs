@@ -37,6 +37,7 @@ namespace POS_Api.Core.Implementation
             }
 
             model.UpdatedBy = userId;
+            model.LocationUId = locationId;
             return _categoryRepos.UpdateCategoryExecution(model);
         }
 
