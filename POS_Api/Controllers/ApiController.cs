@@ -49,6 +49,7 @@ namespace POS_Api.Controllers
             _itemCodeLogic = new ItemCodeLogic();
             _upcLogic = new UpcLogic();
             _checkoutSettingLogic = new CheckoutSettingLogic();
+            _subCategoryLogic = new SubCategoryLogic(); 
         }
 
         #region USER SECTION

@@ -441,7 +441,7 @@ namespace POS_Api.Repository.Implementation
         {
             SubCategoryModel item = null;
             this.Conn = new DBConnection();
-            string query = "SELECT AL.* FROM asset_sub)category AS AL"
+            string query = "SELECT AL.* FROM asset_sub_category AS AL"
              + " WHERE location_uid =" + DbHelper.SetDBValue(locId, true) + " AND "
              + " uid = " + DbHelper.SetDBValue(CategoryId, true)
              + " ORDER BY AL.updated_datetime DESC, AL.added_datetime DESC"
